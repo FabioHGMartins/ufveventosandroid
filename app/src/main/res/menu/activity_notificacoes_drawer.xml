@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_inicio"
+            android:icon="@drawable/inicio"
+            android:title="@string/menu_option_inicial" />
+        <item
+            android:id="@+id/nav_editar_perfil"
+            android:icon="@drawable/editar_perfil"
+            android:title="@string/menu_option_editarperfil" />
+        <item
+            android:id="@+id/nav_notificacoes"
+            android:icon="@drawable/notificacoes"
+            android:title="@string/menu_option_notificacoes" />
+        <item
+            android:id="@+id/nav_sobre"
+            android:icon="@drawable/sobre_icon"
+            android:title="@string/menu_option_sobre" />
+        <item
+            android:id="@+id/nav_sair"
+            android:icon="@drawable/sair"
+            android:title="@string/menu_option_sair" />
+    </group>
+
+</menu>

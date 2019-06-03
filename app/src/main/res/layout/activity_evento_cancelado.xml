@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="-8dp">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/red"
+        android:elevation="0dp"
+        android:theme="@style/ToolbarThemeWhite"
+        app:popupTheme="@style/ToolbarThemeWhite"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="0dp" />
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="551dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1">
+
+        <ImageView
+            android:id="@+id/addAgenda"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/carimbo_cancelado"
+            android:layout_marginLeft="125dp"
+            android:layout_marginTop="120dp"
+            android:elevation="10dp"/>
+
+        <ProgressBar
+            android:id="@+id/progressBarDetalhesEvento"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="150dp"
+            android:layout_gravity="center_horizontal"
+            android:elevation="10dp"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/progress_bar"
+            android:max="100"
+            android:minHeight="43dp"
+            android:minWidth="43dp" />
+        <LinearLayout
+            android:id="@+id/retanguloDetalhesEvento"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginTop="-10dp"
+            android:background="@drawable/rectangle_appbar"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/firstPartDetalhesEvento"
+            android:layout_width="305dp"
+            android:layout_height="270dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/round_outline"
+            android:elevation="1dp"
+            android:orientation="vertical"
+            android:weightSum="1"
+            tools:ignore="UselessLeaf"
+            android:onClick="showHideFirstPart">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tituloEvento"
+                    android:layout_width="225dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:textColor="#C75360"
+                    android:textSize="24dp" />
+
+                <ImageView
+                    android:id="@+id/abreFechaFirstPart"
+                    android:layout_width="37dp"
+                    android:layout_height="37dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/fechar"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:id="@+id/dataLabelEvento"
+                    android:text="Data:" />
+
+                <TextView
+                    android:id="@+id/dataEvento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:id="@+id/horarioLabelEvento"
+                    android:text="Horário:" />
+
+                <TextView
+                    android:id="@+id/horarioEvento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:id="@+id/localLabelEvento"
+                    android:text="Local:" />
+
+                <TextView
+                    android:id="@+id/localEvento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:id="@+id/participantesLabelEvento"
+                    android:text="Participantes:" />
+
+                <TextView
+                    android:id="@+id/participantesEvento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:id="@+id/publicoAlvoLabelEvento"
+                    android:text="Público alvo:" />
+
+                <TextView
+                    android:id="@+id/publicoAlvoEvento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:id="@+id/categoriaLabelEvento"
+                    android:text="Categoria:" />
+
+                <TextView
+                    android:id="@+id/categoriaEvento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="295dp"
+            android:layout_marginTop="240dp"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:id="@+id/mapFragment"/>
+    </FrameLayout>
+
+</RelativeLayout>

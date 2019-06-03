@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.labd2m.vma.ufveventos.controller.categorias_pagina_inicial"
+    tools:showIn="@layout/app_bar_categorias_pagina_inicial">
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="-10dp"
+            android:background="@drawable/rectangle_appbar">
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="305dp"
+            android:layout_height="365dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/round_outline"
+            android:elevation="1dp"
+            android:orientation="vertical"
+            android:weightSum="1"
+            tools:ignore="UselessLeaf">
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/categorias_text" />
+
+            <ProgressBar
+                android:id="@+id/progressBarCategorias"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:max="100"
+                android:minHeight="28dp"
+                android:minWidth="28dp"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/progress_bar"/>/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/lista_categorias"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp">
+                </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="305dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="370dp"
+            android:layout_gravity="center_horizontal"
+            android:elevation="1dp"
+            android:orientation="vertical"
+            android:weightSum="1"
+            tools:ignore="UselessLeaf">
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="256dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/button_cadastrar"
+                android:text="@string/categorias_bt_apply"
+                android:onClick="escolher_categorias"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>

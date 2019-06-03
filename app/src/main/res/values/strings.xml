@@ -1,0 +1,107 @@
+<resources>
+    <string name="app_name">UFV Eventos</string>
+    <string name="title_activity_editar_perfil">Editar Perfil</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_notificacoes">Notificações</string>
+    <string name="title_activity_inicial">UFV Eventos</string>
+    <string name="title_activity_login">UFV Eventos</string>
+    <string name="title_activity_categorias_pagina_inicial">Categorias</string>
+    <string-array name="sexo_array">
+        <item>Prefiro não dizer</item>
+        <item>Feminino</item>
+        <item>Masculino</item>
+        <item>Outro</item>
+    </string-array>
+    <string name="sexo_array_item1">Prefiro não dizer</string>
+    <string name="sexo_array_item2">Feminino</string>
+    <string name="sexo_array_item3">Masculino</string>
+    <string name="sexo_array_item4">Outro</string>
+
+    <string name="login_lb_email">Seu e-mail</string>
+    <string name="login_lb_senha">Senha</string>
+    <string name="login_bt_signin">Entrar</string>
+    <string name="login_lb_signup">Não possui conta?</string>
+    <string name="login_bt_signup">Cadastrar</string>
+    <string name="login_bt_esquecisenha">Esqueci a senha</string>
+    <string name="login_toast_loginerror1">Já existe uma conta com este e-mail cadastrado</string>
+    <string name="login_toast_loginerror2">Não foi possível realizar o cadastro, tente novamente em instantes</string>
+    <string name="login_snackbar_loginerror">Autenticação falhou.</string>
+    <string name="login_errorlb_email">O campo não pode ficar vazio</string>
+    <string name="login_errorlb_senha">O campo não pode ficar vazio</string>
+
+    <string name="esquecisenha_lb_email">Seu e-mail</string>
+    <string name="esquecisenha_bt_recover">Recuperar senha</string>
+    <string name="esquecisenha_errorlb_email">Email Inválido</string>
+    <string name="esquecisenha_toast_recovererror1">Por favor verifique o seu e-mail.</string>
+
+    <string name="cadastrar_lb_email">Seu e-mail</string>
+    <string name="cadastrar_lb_nome">Seu nome</string>
+    <string name="cadastrar_lb_senha">Senha</string>
+    <string name="cadastrar_lb_confirmacaosenha">Confirmação de senha</string>
+    <string name="cadastrar_lb_datadenascimento">Data de Nascimento</string>
+    <string name="cadastrar_lb_sexo">Sexo</string>
+    <string name="cadastrar_bt_cadastrar">Cadastrar</string>
+    <string name="cadastrar_bt_atualizar">Alterar Cadastro</string>
+    <string name="cadastrar_lb_signin">Já possui conta?</string>
+    <string name="cadastrar_bt_signin">Faça Login</string>
+    <string name="cadastrar_errorlb_nome">O campo não pode ficar vazio</string>
+    <string name="cadastrar_errorlb_email">O campo não pode ficar vazio</string>
+    <string name="cadastrar_errorlb_senha">O campo não pode ficar vazio</string>
+    <string name="cadastrar_errorlb_confirmacaosenha">Este campo precisa ser igual à senha.</string>
+    <string name="cadastrar_toast_cadastrarerror1">Já existe uma conta com este e-mail cadastrado</string>
+    <string name="cadastrar_toast_cadastrarerror2">Para entrar na sua conta, vá à tela de login.</string>
+    <string name="atualizar_toast_cadastrarerror1">Não foi possível atualizar o cadastro, tente novamente em instantes.</string>
+    <string name="atualizar_toast_cadastrarerror2">Funcionalidade indisponível para usuários logados com conta Google.</string>
+    <string name="atualizar_toast_attsucesso">Dados atualizados!</string>
+
+    <string name="menu_option_inicial">Início</string>
+    <string name="menu_option_editarperfil">Editar Perfil</string>
+    <string name="menu_option_notificacoes">Notificações</string>
+    <string name="menu_option_sobre">Sobre</string>
+    <string name="menu_option_sair">Sair</string>
+
+    <string name="inicial_bt_filtrarcategorias">Filtrar Categorias</string>
+    <string name="inicial_toast_carregarevento">Não foi possível carregar os eventos.</string>
+    <string name="inicial_toast_naoexistemeventos">Não existem eventos no momento.</string>
+    <string name="inicial_toast_funcindisponivel">Funcionalidade indisponível para usuários Google</string>
+
+    <string name="evento_row_lb_horario">Horário: </string>
+
+    <string name="categorias_text">Escolha as categorias de eventos que deseja visualizar na tela inicial do aplicativo.</string>
+    <string name="categorias_bt_apply">Aplicar filtro</string>
+    <string name="categorias_toast_loaderror">Não foi possível carregar as categorias.</string>
+    <string name="categorias_toast_updateerror">Não foi possível atualizar as preferências.</string>
+    <string name="categorias_toast_success">Dados atualizados com sucesso!</string>
+    <string name="categorias_toast_funcindisponivel">Funcionalidade indisponível para usuários Google</string>
+
+    <string name="detalhes_lb_descricao">Descrição</string>
+    <string name="detalhes_lb_programacao">Programação</string>
+    <string name="detalhes_lb_taxaingresso">Taxa/Ingresso:</string>
+    <string name="detalhes_lb_localdeinscricao">Local de Inscrição:</string>
+    <string name="detalhes_lb_data">Data:</string>
+    <string name="detalhes_lb_horario">Horário:</string>
+    <string name="detalhes_lb_local">Local:</string>
+    <string name="detalhes_lb_participantes">Participantes:</string>
+    <string name="detalhes_lb_publicoalvo">Público-alvo:</string>
+    <string name="detalhes_lb_categoria">Categoria:</string>
+    <string name="detalhes_ilimitado">Ilimitado</string>
+    <string name="detalhes_gratuito">Gratuito</string>
+    <string name="detalhes_sem_inscricao">Não é necessário realizar inscrição.</string>
+    <string name="detalhes_toast_error">Não foi possível conectar.</string>
+    <string name="detalhes_add_agenda">Evento adicionado à agenda.</string>
+    <string name="detalhes_destino">Destino</string>
+
+
+    <string name="notificacoes_habilitar">Habilitar notificações</string>
+    <string name="notificacoes_addeventos">Adicionar eventos à agenda</string>
+    <string name="notificacoes_salvar">Salvar configurações</string>
+    <string name="notificacoes_toasterror1">Não foi possível atualizar as preferências.</string>
+    <string name="notificacoes_toasterror2">Por favor, verifique a sua conexão com a internet.</string>
+    <string name="notificacoes_toasterror3">Não foi possível atualizar o configurações, tente novamente em instantes.</string>
+
+
+</resources>

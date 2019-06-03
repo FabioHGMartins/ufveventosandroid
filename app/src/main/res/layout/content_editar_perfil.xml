@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.labd2m.vma.ufveventos.controller.editar_perfil"
+    tools:showIn="@layout/app_bar_editar_perfil">
+
+    <ScrollView android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="-10dp"
+                android:background="@drawable/rectangle_appbar">
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="305dp"
+                android:layout_height="524dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/round_outline"
+                android:elevation="1dp"
+                android:orientation="vertical"
+                android:weightSum="1"
+                tools:ignore="UselessLeaf">
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/cadastrar_lb_nome" />
+
+                <EditText
+                    android:id="@+id/nomeEditarPerfil"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="-8dp"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/nomeErroEditarPerfil"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/cadastrar_errorlb_nome"
+                    android:textColor="@color/red"/>
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/cadastrar_lb_email" />
+
+                <EditText
+                    android:id="@+id/emailEditarPerfil"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="-8dp"
+                    android:ems="10"
+                    android:inputType="textEmailAddress" />
+
+                <TextView
+                    android:id="@+id/emailErroEditarPerfil"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/cadastrar_errorlb_email"
+                    android:textColor="@color/red"/>
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/cadastrar_lb_senha" />
+
+                <EditText
+                    android:id="@+id/senhaEditarPerfil"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="-8dp"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:id="@+id/senhaErroEditarPerfil"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/cadastrar_errorlb_senha"
+                    android:textColor="@color/red"/>
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/cadastrar_lb_confirmacaosenha" />
+
+                <EditText
+                    android:id="@+id/confirmaSenhaEditarPerfil"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="-8dp"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:id="@+id/confirmaSenhaErroEditarPerfil"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/cadastrar_errorlb_confirmacaosenha"
+                    android:textColor="@color/red"/>
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/cadastrar_lb_datadenascimento" />
+
+                <EditText
+                    android:id="@+id/nascimentoEditarPefil"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="-8dp"
+                    android:ems="10"
+                    android:focusable="false"
+                    android:inputType="text"
+                    android:onClick="showDatePickerDialog"/>
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/cadastrar_lb_sexo" />
+                <Spinner
+                    android:id="@+id/sexo_editar_perfil"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ProgressBar
+                    android:id="@+id/progressBarEditarPerfil"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-6dp"
+                    android:layout_gravity="center_horizontal"
+                    android:max="100"
+                    android:minHeight="28dp"
+                    android:minWidth="28dp"
+                    android:indeterminate="true"
+                    android:indeterminateDrawable="@drawable/progress_bar"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="305dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="484dp"
+                android:layout_gravity="center_horizontal"
+                android:elevation="1dp"
+                android:orientation="vertical"
+                android:weightSum="1"
+                tools:ignore="UselessLeaf">
+
+                <Button
+                    android:id="@+id/button"
+                    android:layout_width="256dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/button_cadastrar"
+                    android:text="@string/cadastrar_bt_atualizar"
+                    android:onClick="alterar_cadastro"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+        </FrameLayout>
+    </ScrollView>
+</android.support.constraint.ConstraintLayout>

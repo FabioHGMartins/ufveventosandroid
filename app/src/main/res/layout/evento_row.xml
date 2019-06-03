@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:cardview="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+cardview:cardCornerRadius="1dp"
+cardview:cardElevation="0.5dp"
+cardview:contentPaddingTop="0dp"
+cardview:cardUseCompatPadding="true">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/circuloEventoRow"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="3dp"
+        android:background="@drawable/circle">
+        <TextView
+            android:id="@+id/letraEventoRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:text="A"/>
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/denominacaoEventoRow"
+        android:layout_width="wrap_content"
+        android:layout_height="47dp"
+        android:layout_marginLeft="20dp"
+        android:layout_toLeftOf="@+id/dataEventoRow"
+        android:text="UFV"
+        android:layout_toRightOf="@id/circuloEventoRow"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/dataEventoRow"
+        android:layout_width="50dp"
+        android:layout_height="20dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:textColor="#BF7E85"
+        android:textStyle="italic|bold"
+        android:text="05/10" />
+    <TextView
+        android:id="@+id/horarioEventoRow"
+        android:layout_width="200dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@id/denominacaoEventoRow"
+        android:layout_toRightOf="@id/circuloEventoRow"
+        android:text="Horário: 08:00 - 18:00" />
+</RelativeLayout>
+</android.support.v7.widget.CardView>
