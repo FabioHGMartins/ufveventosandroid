@@ -3,6 +3,7 @@ package com.labd2m.vma.ufveventos.controller;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -35,7 +36,9 @@ import com.labd2m.vma.ufveventos.R;
 import com.labd2m.vma.ufveventos.model.Categoria;
 import com.labd2m.vma.ufveventos.model.Evento;
 import com.labd2m.vma.ufveventos.model.Local;
+import com.labd2m.vma.ufveventos.model.Programacao;
 import com.labd2m.vma.ufveventos.util.Agenda;
+import com.labd2m.vma.ufveventos.util.GoogleTranslate;
 import com.labd2m.vma.ufveventos.util.Permission;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -53,12 +56,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
+import com.labd2m.vma.ufveventos.util.SharedPref;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 public class detalhes_evento_sem_descricao extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
     View.OnClickListener{
@@ -90,7 +96,7 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
                     == PackageManager.PERMISSION_GRANTED) {
                 Agenda agenda = new Agenda();
                 agenda.addEvent(evento, getBaseContext(), getContentResolver(), getParent());
-                Toast.makeText(getBaseContext(), String.valueOf(R.string.detalhes_add_agenda), Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), R.string.detalhes_add_agenda, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -338,6 +344,11 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
 
         findViewById(R.id.addAgenda).setOnClickListener(this);
 
+
+
+        SharedPreferences sharedPref = this.getSharedPreferences("UFVEVENTOS45dfd94be4b30d5844d2bcca2d997db0",
+                Context.MODE_PRIVATE);
+
         //Traça rota
         List<Local> locaisAux = evento.getLocais();
         double latDest = Double.parseDouble(locaisAux.get(0).getLatitude());
@@ -389,6 +400,11 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
                 if (i != locais.size() - 1)
                     local = local + ", ";
             }
+
+
+            if(SharedPref.deveTraduzir(sharedPref))
+                local = translate(local);
+
             findViewById(R.id.localLabelEvento).setVisibility(View.VISIBLE);
             ((TextView) findViewById(R.id.localEvento)).
                     setText(local);
@@ -399,12 +415,12 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
             if (evento.getNumeroParticipantes() > 0) {
                 findViewById(R.id.participantesLabelEvento).setVisibility(View.VISIBLE);
                 ((TextView) findViewById(R.id.participantesEvento)).
-                        setText(String.valueOf(evento.getNumeroParticipantes()));
+                        setText(evento.getNumeroParticipantes());
             }
         }else{
             findViewById(R.id.participantesLabelEvento).setVisibility(View.VISIBLE);
             ((TextView) findViewById(R.id.participantesEvento)).
-                    setText(String.valueOf(R.string.detalhes_ilimitado));
+                    setText(R.string.detalhes_ilimitado);
         }
 
         //Seta valor da inscrição
@@ -412,7 +428,7 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
             if (evento.getValorinscricao() == 0){
                 findViewById(R.id.taxaIngressoLabel).setVisibility(View.VISIBLE);
                 ((TextView) findViewById(R.id.taxaIngresso)).
-                        setText(String.valueOf(R.string.detalhes_gratuito));
+                        setText(R.string.detalhes_gratuito);
             }else{
                 String valor = String.format( "%.2f",evento.getValorinscricao());
                 findViewById(R.id.taxaIngressoLabel).setVisibility(View.VISIBLE);
@@ -422,7 +438,7 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
         else {
             findViewById(R.id.taxaIngressoLabel).setVisibility(View.VISIBLE);
             ((TextView) findViewById(R.id.taxaIngresso)).
-                    setText(String.valueOf(R.string.detalhes_sem_inscricao));
+                    setText(R.string.detalhes_sem_inscricao);
         }
 
 
@@ -464,7 +480,7 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
             Dialog dialog = api.getErrorDialog(this, isAvailable, 0);
             dialog.show();
         }else{
-            Toast.makeText(getBaseContext(),String.valueOf(R.string.detalhes_toast_error),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(),R.string.detalhes_toast_error,Toast.LENGTH_SHORT).show();
         }
         return false;
     }
@@ -521,12 +537,27 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
                             == PackageManager.PERMISSION_GRANTED) {
                         Agenda agenda = new Agenda();
                         agenda.addEvent(evento, getBaseContext(), getContentResolver(), getParent());
-                        Toast.makeText(getBaseContext(), String.valueOf(R.string.detalhes_add_agenda), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), R.string.detalhes_add_agenda, Toast.LENGTH_LONG).show();
                     }
                 } else {
                 }
                 return;
             }
         }
+    }
+
+    private String translate(String text) {
+        if(!Locale.getDefault().getLanguage().equals("pt")) {
+            try {
+                List<String> aux = new ArrayList<>();
+                aux.add(text);
+                text = (new GoogleTranslate().execute(aux, "pt", Locale.getDefault().getLanguage()).get()).get(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        return text;
     }
 }

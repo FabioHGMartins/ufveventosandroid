@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+
+
 android {
     compileSdkVersion 25
     buildToolsVersion '27.0.3'
@@ -7,8 +9,8 @@ android {
         applicationId "com.labd2m.vma.ufveventos"
         minSdkVersion 17
         targetSdkVersion 26
-        versionCode 9
-        versionName '1.2 Beta'
+        versionCode 11
+        versionName '1.5 Beta'
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -23,6 +25,12 @@ android {
         exclude 'META-INF/DEPENDENCIES'
     }
     productFlavors {
+    }
+
+    lintOptions {
+
+        checkReleaseBuilds false
+
     }
 }
 

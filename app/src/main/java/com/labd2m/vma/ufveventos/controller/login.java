@@ -737,7 +737,6 @@ public class login extends AppCompatActivity implements View.OnClickListener {
                                                                     }catch (Exception e){Log.e("ERRO JSON",e.getMessage());}
 
                                                                     //Encerra barra de carregamento
-                                                                    progressBar.setVisibility(View.GONE);
 
                                                                     //Dispara intent para a tela inicial
                                                                     Intent it = new Intent(getBaseContext(),inicial.class);
@@ -749,7 +748,6 @@ public class login extends AppCompatActivity implements View.OnClickListener {
                                                     usuario.setAgenda(agenda);
                                                     usuario.setNotificacoes(notificacoes);
                                                     //Encerra barra de carregamento
-                                                    progressBar.setVisibility(View.GONE);
 
                                                     //Dispara intent para a tela inicial
                                                     Intent it = new Intent(getBaseContext(),inicial.class);
@@ -809,7 +807,6 @@ public class login extends AppCompatActivity implements View.OnClickListener {
                                                     }catch (Exception e){Log.e("ERRO JSON",e.getMessage());}
 
                                                     //Encerra barra de carregamento
-                                                    progressBar.setVisibility(View.GONE);
                                                     //Dispara intent para a tela inicial
                                                     Intent it = new Intent(getBaseContext(),inicial.class);
                                                     startActivity(it);
@@ -820,7 +817,6 @@ public class login extends AppCompatActivity implements View.OnClickListener {
                                     usuario.setAgenda(agenda);
                                     usuario.setNotificacoes(notificacoes);
                                     //Encerra barra de carregamento
-                                    progressBar.setVisibility(View.GONE);
                                     //Dispara intent para a tela inicial
                                     Intent it = new Intent(getBaseContext(),inicial.class);
                                     startActivity(it);

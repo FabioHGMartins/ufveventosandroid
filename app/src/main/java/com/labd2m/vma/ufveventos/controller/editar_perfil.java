@@ -200,14 +200,14 @@ public class editar_perfil extends AppCompatActivity
                         public void onError(Throwable e){
                             //Esconde barra de carregamento
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(getBaseContext(),String.valueOf(R.string.atualizar_toast_cadastrarerror1), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getBaseContext(),R.string.atualizar_toast_cadastrarerror1, Toast.LENGTH_LONG).show();
                         }
 
                         @Override
                         public void onNext(Void response){
                             //Esconde barra de carregamento
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(getBaseContext(),String.valueOf(R.string.atualizar_toast_attsucesso),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getBaseContext(),R.string.atualizar_toast_attsucesso,Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     });
@@ -248,7 +248,7 @@ public class editar_perfil extends AppCompatActivity
                 startActivity(it);
             }
             else{
-                Toast.makeText(getBaseContext(),String.valueOf(R.string.atualizar_toast_cadastrarerror2),Toast.LENGTH_LONG)
+                Toast.makeText(getBaseContext(),R.string.atualizar_toast_cadastrarerror2,Toast.LENGTH_LONG)
                         .show();
             }
         } else if (id == R.id.nav_notificacoes) {
@@ -264,7 +264,8 @@ public class editar_perfil extends AppCompatActivity
             editor.commit();
 
             // Deletar Arquivos internos
-            SaveState.clearData(this);
+            SaveState.clearData(this,SaveState.SAVESTATE_CATEGORIAS_PATH);
+            SaveState.clearData(this,SaveState.SAVESTATE_EVENTOS_PATH);
 
             Intent it = new Intent(getBaseContext(),login.class);
             it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

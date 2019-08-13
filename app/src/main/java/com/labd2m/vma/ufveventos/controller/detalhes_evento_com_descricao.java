@@ -3,6 +3,7 @@ package com.labd2m.vma.ufveventos.controller;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -57,8 +58,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
+import com.labd2m.vma.ufveventos.util.SharedPref;
+
 import org.json.JSONObject;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -114,6 +118,9 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
         mDestinationLatLng = new LatLng(latDest, lngDest);
         mSourceLatLng = new LatLng(latDest, lngDest);
 
+        SharedPreferences sharedPref = this.getSharedPreferences("UFVEVENTOS45dfd94be4b30d5844d2bcca2d997db0",
+                Context.MODE_PRIVATE);
+
         //Requisita permissão para mapas
         Permission permission = new Permission();
         permission.requestPermissionMaps(detalhes_evento_com_descricao.this,this);
@@ -168,40 +175,49 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
                     local = local + ", ";
             }
             findViewById(R.id.localLabelEvento).setVisibility(View.VISIBLE);
+
+            if(SharedPref.deveTraduzir(sharedPref))
+                local = translate(local);
+
             ((TextView) findViewById(R.id.localEvento)).
-                    setText(translate(local));
+                    setText(local);
         }
 
         //Seta número de participantes do evento
         if (evento.getMostrarparticipantes() == 1) { //Deseja divulgar o número de participantes
             if (evento.getNumeroParticipantes() > 0) {
                 findViewById(R.id.participantesLabelEvento).setVisibility(View.VISIBLE);
+                Log.i("Texto", evento.getNumeroParticipantes()+"");
                 ((TextView) findViewById(R.id.participantesEvento)).
-                        setText(String.valueOf(evento.getNumeroParticipantes()));
+                        setText(evento.getNumeroParticipantes()+"");
             }
         }else{
             findViewById(R.id.participantesLabelEvento).setVisibility(View.VISIBLE);
-            String text = String.valueOf(R.string.detalhes_ilimitado);
-            ((TextView) findViewById(R.id.participantesEvento)).setText(text);
+            ((TextView) findViewById(R.id.participantesEvento)).setText(R.string.detalhes_ilimitado);
 
         }
 
         //Seta valor da inscrição
-        String text = String.valueOf(R.string.detalhes_ilimitado);
+        String text;
         if (evento.getTeminscricao() == 1)
             if (evento.getValorinscricao() == 0){
-                text = String.valueOf(R.string.detalhes_gratuito);
+                ((TextView) findViewById(R.id.taxaIngresso)).
+                        setText(R.string.detalhes_gratuito);
             }else{
-                String valor = String.format( "%.2f",evento.getValorinscricao());
-                text = "R$"+valor;
+                Locale locale = new Locale("pt", "BR");
+                NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+                Log.i("Texto", evento.getValorinscricao()+"");
+                String valor = currencyFormatter.format(evento.getValorinscricao());
+                text = valor;
+                ((TextView) findViewById(R.id.taxaIngresso)).
+                        setText(valor);
             }
         else {
             findViewById(R.id.taxaIngressoLabel).setVisibility(View.VISIBLE);
-            text = String.valueOf(R.string.detalhes_sem_inscricao);
+            ((TextView) findViewById(R.id.taxaIngresso)).
+                    setText(R.string.detalhes_sem_inscricao);
         }
         findViewById(R.id.taxaIngressoLabel).setVisibility(View.VISIBLE);
-        ((TextView) findViewById(R.id.taxaIngresso)).
-                setText(text);
 
         //Seta local ou link da inscricao
         if (evento.getTeminscricao() == 1){
@@ -247,7 +263,10 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
             for (Programacao prog: evento.getProgramacoes()) {
                 programacoes.add(prog);
             }
-            programacoes = traduzirProg(programacoes);
+
+            if(SharedPref.deveTraduzir(sharedPref))
+                programacoes = traduzirProg(programacoes);
+
             RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.programacaoEvento);
             myRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             RecyclerViewProgramacaoAdapter adapter = new RecyclerViewProgramacaoAdapter(getBaseContext(),programacoes);
@@ -274,7 +293,7 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
                     == PackageManager.PERMISSION_GRANTED) {
                 Agenda calendar = new Agenda();
                 calendar.addEvent(evento, getBaseContext(), getContentResolver(), getParent());
-                Toast.makeText(getBaseContext(), String.valueOf(R.string.detalhes_add_agenda), Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), R.string.detalhes_add_agenda, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -485,7 +504,7 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
             Dialog dialog = api.getErrorDialog(this, isAvailable, 0);
             dialog.show();
         }else{
-            Toast.makeText(getBaseContext(),String.valueOf(R.string.detalhes_toast_error),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(),R.string.detalhes_toast_error,Toast.LENGTH_SHORT).show();
         }
         return false;
     }
@@ -642,7 +661,7 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
                             == PackageManager.PERMISSION_GRANTED) {
                         Agenda calendar = new Agenda();
                         calendar.addEvent(evento, getBaseContext(), getContentResolver(), getParent());
-                        Toast.makeText(getBaseContext(), String.valueOf(R.string.detalhes_add_agenda), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), R.string.detalhes_add_agenda, Toast.LENGTH_LONG).show();
                     }
                 } else {
                 }

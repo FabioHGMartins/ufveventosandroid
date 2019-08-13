@@ -1,6 +1,11 @@
 package com.labd2m.vma.ufveventos.controller;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -45,6 +50,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -79,6 +85,8 @@ public class inicial extends AppCompatActivity
         UsuarioNavigationDrawer und = new UsuarioNavigationDrawer();
         und.setNomeUsuario(navigationView,usuario.getNome());
         und.setUsuarioImagem(navigationView, usuario.getFoto());
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBarTelaInicial);
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -97,7 +105,9 @@ public class inicial extends AppCompatActivity
         //Inicia barra de carregamento
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBarTelaInicial);
         progressBar.setProgress(View.VISIBLE);
-
+        ObjectAnimator.ofInt(progressBar, "progress", 50)
+                .setDuration(300)
+                .start();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -208,6 +218,7 @@ public class inicial extends AppCompatActivity
                 Gson gson = new Gson();
                 String json = gson.toJson(item);
                 it.putExtra("evento", json);
+                progressBar.setVisibility(View.VISIBLE);
                 startActivity(it);
             }
         });
@@ -228,9 +239,10 @@ public class inicial extends AppCompatActivity
 
 
 
-        if(!Locale.getDefault().getLanguage().equals("pt")) {
+        sharedPref = this.getSharedPreferences("UFVEVENTOS45dfd94be4b30d5844d2bcca2d997db0",
+                Context.MODE_PRIVATE);
+        if(SharedPref.deveTraduzir(sharedPref)) {
             eventosSing.setCategorias((List<Categoria>) SaveState.loadData(this,SaveState.SAVESTATE_CATEGORIAS_PATH));
-
         } else {
             eventosSing.setCategorias(new ArrayList<Categoria>());
 
@@ -253,116 +265,81 @@ public class inicial extends AppCompatActivity
 
                                @Override
                                public void onNext(List<Categoria> response) {
-                                   if (SharedPref.deveTraduzir()) {
+                                   Log.i("TRANSLATE","catrespnse" + response.size());
+                                   if (SharedPref.deveTraduzir(sharedPref)) {
+                                       Log.i("TRANSLATE","devetraduzir");
                                        if (!attListaCategorias(response)) {
                                            eventosSing.setCategorias(traduzirCategorias(response));
+                                           SaveState.clearData(getParent(),SaveState.SAVESTATE_CATEGORIAS_PATH);
                                            SaveState.saveData(getParent(),eventosSing.getCategorias(),SaveState.SAVESTATE_CATEGORIAS_PATH);
                                        }
+                                       Log.i("TRANSLATE","categoriassing"+eventosSing.getCategorias().size()+"");
+                                   } else {
+                                       Log.i("TRANSLATE","nao deve traduzir");
+                                       eventosSing.setCategorias(response);
                                    }
                                }
                            });
 
         //Recupera eventos salvos internamente e armazena a lista no singleton
-        if(SharedPref.deveTraduzir()) {
+        if(SharedPref.deveTraduzir(sharedPref)) {
             eventosSing.setEventos(SaveState.attListaEventos((List<Evento>) SaveState.loadData(this,SaveState.SAVESTATE_EVENTOS_PATH)));
-
-            if(eventosSing.tamanho() > 0) {
-                //Copia singleton para a lista de eventos
-                for (int i = 0; i < eventosSing.tamanho(); i++) {
-                    eventos.add(eventosSing.getEvento(i));
-//                    Log.i("TRANSLATE", eventos.get(i).getDataFim());
-                }
-            }
-            Log.i("TRANSLATE", eventosSing.tamanho() + "");
-
+//
+//            if(eventosSing.tamanho() > 0) {
+//                //Copia singleton para a lista de eventos
+//                for (int i = 0; i < eventosSing.tamanho(); i++) {
+//                    eventos.add(eventosSing.getEvento(i));
+////                    Log.i("TRANSLATE", eventos.get(i).getDataFim());
+//                }
+//            }
+            Log.i("TRANSLATE", "Eventos singleton " + eventosSing.tamanho() + "");
         }
 
         //Verifica se a lista possui algum evento
 //        if (eventosSing.tamanho() < 20) {
-            offset = eventosSing.tamanho();
-            limit = 110;
-            Observable<List<Evento>> observable;
-            observable= api.getEventos(offset, limit);
+        offset = 0;
+        limit = 110;
+        Observable<List<Evento>> observable;
+        observable= api.getEventos(offset, limit);
 
-            //Salva todos os limit - offset eventos no singleton
-            observable.subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<List<Evento>>() {
-                        @Override
-                        public void onCompleted() {
+        //Salva todos os limit - offset eventos no singleton
+        observable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Evento>>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        //Encerra barra de carregamento
+                        progressBar.setVisibility(View.GONE);
+                        e.printStackTrace();
+                        Toast.makeText(getBaseContext(), R.string.inicial_toast_carregarevento, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(List<Evento> response) {
+                        //Copia resultados para a lista de eventos
+                        if(SharedPref.deveTraduzir(sharedPref)) {
+                            response = selectEventosTranslate(response);
+                            Log.i("TRANSLATE", "passou pelo devetraduzir");
                         }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            //Encerra barra de carregamento
-                            progressBar.setVisibility(View.GONE);
-                            e.printStackTrace();
-                            Toast.makeText(getBaseContext(), R.string.inicial_toast_carregarevento, Toast.LENGTH_SHORT).show();
+                        eventos.addAll(response);
+                        eventosSing.setEventos(response);
+                        if(SharedPref.deveTraduzir(sharedPref)) {
+                            SaveState.clearData(getParent(),SaveState.SAVESTATE_EVENTOS_PATH);
+                            SaveState.saveData(getParent(), eventosSing.getEventos(), SaveState.SAVESTATE_EVENTOS_PATH);
                         }
+                        Log.i("TRANSLATE", "eventossing: " + eventosSing.tamanho() + "");
+                        Log.i("TRANSLATE", "eventos: " + eventos.size() + "");
 
-                        @Override
-                        public void onNext(List<Evento> response) {
-                            //Copia resultados para a lista de eventos
-                            if(SharedPref.deveTraduzir()) {
-                                response = traduzirInicial(response);
-                            }
-                            eventos.addAll(response);
-                            eventosSing.setEventos(eventos);
-                            SaveState.saveData(getParent(),eventos,SaveState.SAVESTATE_EVENTOS_PATH);
-
-                            //Atualiza RecyclerView
-                            if(usuario.getNumCategorias() == 0) {
-                                Log.i("TRANSLATE", "Ficou no numCategorias");
-                                adapter.notifyDataSetChanged();
-                                //Encerra barra de carregamento
-                                progressBar.setVisibility(View.GONE);
-                            } else {
-                                //Se o usuario tiver alguma preferencia de categoria, este trecho executa uma filtragem nos eventos salvos no singleton
-                                if(usuario.getNumCategorias() != 0) {
-                                    Observable<List<Evento>> observableCat = api.getEventosPorUsuario(usuario.getId(),offset,limit);
-                                    observableCat.subscribeOn(Schedulers.newThread())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe(new Observer<List<Evento>>() {
-                                                @Override
-                                                public void onCompleted() {
-                                                }
-
-                                                @Override
-                                                public void onError(Throwable e) {
-                                                    //Encerra barra de carregamento
-                                                    progressBar.setVisibility(View.GONE);
-                                                    e.printStackTrace();
-                                                    Toast.makeText(getBaseContext(), R.string.inicial_toast_carregarevento, Toast.LENGTH_SHORT).show();
-                                                }
-
-                                                @Override
-                                                public void onNext(List<Evento> response) {
-                                                    //Copia resultados para a lista de eventos
-                                                    if(SharedPref.deveTraduzir()) {
-                                                        eventos = selectEventos(response);
-                                                    } else {
-                                                        eventos = response;
-                                                    }
-
-                                                    //Atualiza RecyclerView
-                                                    Log.i("TRANSLATE", "NUMSELECTED ONCREATE: " + eventos.size());
-                                                    adapter.notifyDataSetChanged();
-                                                    //Encerra barra de carregamento
-                                                    progressBar.setVisibility(View.GONE);
-
-                                                }
-                                            });
-                                }
-                            }
-
-                        }
-                    });
-//        } else {
-//            //Atualiza RecyclerView
-//            adapter.notifyDataSetChanged();
-//            //Encerra barra de carregamento
-//            progressBar.setVisibility(View.GONE);
-//        }
+                        //Atualiza RecyclerView
+                        adapter.notifyDataSetChanged();
+                        //Encerra barra de carregamento
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
 
 
 
@@ -409,11 +386,13 @@ public class inicial extends AppCompatActivity
                                     @Override
                                     public void onNext(List<Evento> response) {
                                         //Copia resultados para a lista de eventos
-                                        if(SharedPref.deveTraduzir()) {
+                                        if(SharedPref.deveTraduzir(sharedPref)) {
                                             response = traduzirInicial(response);
                                         }
                                         eventos.addAll(response);
-                                        SaveState.saveData(getParent(),eventos,SaveState.SAVESTATE_EVENTOS_PATH);
+                                        eventosSing.getEventos().addAll(response);
+                                        SaveState.clearData(getParent(),SaveState.SAVESTATE_EVENTOS_PATH);
+                                        SaveState.saveData(getParent(),eventosSing.getEventos(),SaveState.SAVESTATE_EVENTOS_PATH);
                                         //Atualiza RecyclerView
                                         adapter.notifyDataSetChanged();
                                         //Encerra barra de carregamento
@@ -424,6 +403,16 @@ public class inicial extends AppCompatActivity
                 }
             }
         });
+
+        //Avisa para o usuario sobre a Google Translate API
+        boolean firstrun = sharedPref.getBoolean("firstrun",true);
+        if(firstrun && !Locale.getDefault().getLanguage().equals("pt")) {
+            TranslateDialog translateDialog = new TranslateDialog();
+            translateDialog.show(getFragmentManager(),"");
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("firstrun", false);
+            editor.commit();
+        }
 
     }
 
@@ -479,7 +468,7 @@ public class inicial extends AppCompatActivity
 
 
             if(usuario.getNumCategorias() == 0) {
-                eventos = eventosSing.getEventos();
+                eventos.addAll(eventosSing.getEventos());
                 Log.i("TRANSLATE", "NUMEVENTOS: " + eventos.size());
                 adapter.notifyDataSetChanged();
                 //Encerra barra de carregamento
@@ -504,15 +493,19 @@ public class inicial extends AppCompatActivity
                             @Override
                             public void onNext(List<Evento> response) {
                                 //Copia resultados para a lista de eventos
-                                if(SharedPref.deveTraduzir()) {
-                                    eventos = selectEventos(response);
+
+                                eventos.clear();
+                                if(SharedPref.deveTraduzir(sharedPref)) {
+                                    eventos.addAll(selectEventos(response));
                                 } else {
-                                    eventos = response;
+                                    eventos.addAll(response);
                                 }
 
                                 //Atualiza RecyclerView
-                                Log.i("TRANSLATE", "NUMSELECTED: " + eventos.size());
                                 adapter.notifyDataSetChanged();
+                                Log.i("TRANSLATE", "NUMSELECTED: " + eventos.size());
+                                Log.i("TRANSLATE", "adapter: " +
+                                        adapter.getItemCount());
                                 //Encerra barra de carregamento
                                 progressBar.setVisibility(View.GONE);
 
@@ -536,7 +529,7 @@ public class inicial extends AppCompatActivity
 
                         if (progressBar.getVisibility() != View.VISIBLE &&
                                 (visibleItemCount + pastVisiblesItems) >= totalItemCount) {
-                            //Carrega mais 5 itens
+                            //Carrega mais 10 itens
                             //Mostra barra de carregamento
                             progressBar.setVisibility(View.VISIBLE);
                             //Atualiza offset e limit, ou seja, busca mais 10 eventos
@@ -565,10 +558,12 @@ public class inicial extends AppCompatActivity
                                                 response = traduzirInicial(response);
                                             }
                                             eventos.addAll(response);
-                                            SaveState.saveData(getParent(),eventos,SaveState.SAVESTATE_EVENTOS_PATH);
+                                            eventosSing.getEventos().addAll(response);
+                                            SaveState.clearData(getParent(),SaveState.SAVESTATE_EVENTOS_PATH);
+                                            SaveState.saveData(getParent(),eventosSing.getEventos(),SaveState.SAVESTATE_EVENTOS_PATH);
                                             //Atualiza RecyclerView
-                                            adapter.notifyDataSetChanged();
-                                            //Encerra barra de carregamento
+//                                            adapter.notifyDataSetChanged();
+//                                            //Encerra barra de carregamento
                                             progressBar.setVisibility(View.GONE);
                                         }
                                     });
@@ -640,7 +635,8 @@ public class inicial extends AppCompatActivity
             mAuth.signOut();
 
             // Deletar Arquivos internos
-            SaveState.clearData(this);
+            SaveState.clearData(this,SaveState.SAVESTATE_CATEGORIAS_PATH);
+            SaveState.clearData(this,SaveState.SAVESTATE_EVENTOS_PATH);
 
             // Google sign out
             mGoogleSignInClient.signOut().addOnCompleteListener(this,
@@ -717,8 +713,8 @@ public class inicial extends AppCompatActivity
                     return false;
                 }
             }
+            return true;
         } else return false;
-        return true;
     }
 
     private List<Evento> selectEventos(List<Evento> response){
@@ -727,6 +723,64 @@ public class inicial extends AppCompatActivity
             if(response.get(j).getId() == eventosSing.getEvento(i).getId()) {
                 eventos.add(eventosSing.getEvento(i));
                 j++;
+            }
+        }
+        return eventos;
+    }
+
+    private List<Evento> selectEventosTranslate(List<Evento> response){
+        List<Evento> eventosExistentes = new ArrayList<>();
+        List<Evento> eventosNovos = new ArrayList<>();
+        Collator collator = Collator.getInstance();
+        for(int i = 0, j = 0; i < eventosSing.tamanho() && j < response.size(); i++) {
+            Evento eventoRspn = response.get(j);
+            Evento eventoSng = eventosSing.getEvento(i);
+            if(eventoRspn.getId() == eventoSng.getId()) {
+                eventosExistentes.add(eventoSng);
+                j++;
+            } else {
+                int k = j;
+                boolean l = false;
+                while(collator.compare(eventoSng.getDataInicio(),response.get(k).getDataInicio()) <= 0) {
+                    if(eventoSng.getId() == response.get(k).getId())  {
+                        l = true;
+                        break;
+                    } else {
+                        eventosNovos.add(response.get(k));
+                    }
+                    l = false;
+                    k++;
+                }
+                if (l) {
+                    eventosExistentes.add(eventoSng);
+                }
+                j = k;
+
+            }
+        }
+        for(int i = eventosSing.tamanho(); i < response.size(); i++) {
+            eventosNovos.add(response.get(i));
+        }
+        eventosNovos = traduzirInicial(eventosNovos);
+        List<Evento> eventos = new ArrayList<>();
+        int j = 0, k = 0;
+        for(int i = 0; i < eventosExistentes.size() + eventosNovos.size(); i++) {
+            if(j < eventosExistentes.size() && k < eventosNovos.size()) {
+                Evento eventoE = eventosExistentes.get(j);
+                Evento eventoN = eventosNovos.get(k);
+                if(collator.compare(eventoE.getDataInicio(),eventoN.getDataInicio()) <= 0) {
+                    eventos.add(eventoE);
+                    j++;
+                } else {
+                    eventos.add(eventoN);
+                    k++;
+                }
+            } else if (j < eventosExistentes.size()) {
+                eventos.add(eventosExistentes.get(j));
+                j++;
+            } else {
+                eventos.add(eventosNovos.get(k));
+                k++;
             }
         }
         return eventos;

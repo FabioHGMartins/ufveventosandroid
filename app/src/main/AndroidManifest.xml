@@ -83,7 +83,7 @@
             android:theme="@style/NoAction" />
         <activity
             android:name=".controller.detalhes_evento_com_descricao"
-            android:label="Evento"
+            android:label="@string/title_activity_detalhes"
             android:parentActivityName=".controller.inicial"
             android:screenOrientation="portrait"
             android:theme="@style/NoAction">
@@ -95,7 +95,7 @@
         </activity>
         <activity
             android:name=".controller.detalhes_evento_sem_descricao"
-            android:label="Evento"
+            android:label="@string/title_activity_detalhes"
             android:parentActivityName=".controller.inicial"
             android:screenOrientation="portrait"
             android:theme="@style/NoAction">

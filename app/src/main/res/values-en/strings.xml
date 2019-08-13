@@ -6,9 +6,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_notificacoes">Notifications</string>
+    <string name="title_activity_notificacoes">Options</string>
     <string name="title_activity_inicial">UFV Events</string>
     <string name="title_activity_login">UFV Events</string>
+    <string name="title_activity_detalhes">Event</string>
     <string name="title_activity_categorias_pagina_inicial">Categories</string>
     <string-array name="sexo_array">
         <item>I would rather not tell that</item>
@@ -61,7 +62,7 @@
 
     <string name="menu_option_inicial">Home</string>
     <string name="menu_option_editarperfil">Edit Profile</string>
-    <string name="menu_option_notificacoes">Notifications</string>
+    <string name="menu_option_notificacoes">Options</string>
     <string name="menu_option_sobre">About</string>
     <string name="menu_option_sair">Log Out</string>
 
@@ -69,6 +70,9 @@
     <string name="inicial_toast_carregarevento">The events could not be loaded.</string>
     <string name="inicial_toast_naoexistemeventos">No events at the moment.</string>
     <string name="inicial_toast_funcindisponivel">Functionality unavailable for Google users</string>
+    <string name="inicial_dialog_text">This application uses the Google Translate API to translate your content. If the data is too slow to load, you can disable this feature in Main Menu > Options > Enable content translation. </string>
+    <string name="inicial_dialog_ok">OK, I got it</string>
+
 
     <string name="evento_row_lb_horario">Time: </string>
 
@@ -96,11 +100,19 @@
     <string name="detalhes_add_agenda">Event added to calendar.</string>
     <string name="detalhes_destino">Destination</string>
 
+    <string name="programacao_data">Date:</string>
+    <string name="programacao_horario">Time:</string>
+    <string name="programacao_descricao">Description:</string>
+    <string name="detalhes_descricao_programacao">Activities description:</string>
+
     <string name="notificacoes_habilitar">Enable notifications</string>
     <string name="notificacoes_addeventos">Add events to calendar</string>
+    <string name="notificacoes_translate">Enable content translation (Requires restart app)</string>
     <string name="notificacoes_salvar">Save Settings</string>
     <string name="notificacoes_toasterror1">Unable to update preferences.</string>
     <string name="notificacoes_toasterror2">Please check your internet connection.</string>
     <string name="notificacoes_toasterror3">The settings could not be updated, please try again in a moment.</string>
+    <string name="notificacoes_toast_translate">Setup saved! Will be done on next app run</string>
+
 
 </resources>

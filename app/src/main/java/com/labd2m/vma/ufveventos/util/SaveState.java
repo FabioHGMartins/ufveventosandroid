@@ -75,14 +75,12 @@ public class SaveState implements Serializable {
         return objetos;
     }
 
-    public static void clearData(Activity pContext){
+    public static void clearData(Activity pContext, String nomeArquivo){
         if(mFolder == null){
             mFolder = pContext.getExternalFilesDir(null);
         }
 
-        File file = new File(mFolder, "eventosTranslate.data");
-        file.delete();
-        file = new File(mFolder, "categoriasTranslate.data");
+        File file = new File(mFolder, nomeArquivo);
         file.delete();
     }
 
@@ -93,7 +91,7 @@ public class SaveState implements Serializable {
 //        Log.i("TRANSLATE", "hoje " + hoje);
         List<Evento> novoEventos = new ArrayList<>();
         for(int i = 0; i < eventos.size(); i++) {
-            if(collator.compare(eventos.get(i).getDataFim(),hoje) >= 0) {
+            if(collator.compare(eventos.get(i).getDataInicio(),hoje) >= 0) {
                 novoEventos.add(eventos.get(i));
             }
         }

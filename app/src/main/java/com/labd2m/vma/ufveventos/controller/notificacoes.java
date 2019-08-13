@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import com.labd2m.vma.ufveventos.R;
 import com.labd2m.vma.ufveventos.model.Categoria;
+import com.labd2m.vma.ufveventos.model.EventosSingleton;
+import com.labd2m.vma.ufveventos.model.Local;
 import com.labd2m.vma.ufveventos.model.UsuarioSingleton;
 import com.labd2m.vma.ufveventos.util.GoogleTranslate;
 import com.labd2m.vma.ufveventos.util.Permission;
@@ -179,14 +181,14 @@ public class notificacoes extends AppCompatActivity
                             public void onError(Throwable e){
                                 //Esconde barra de carregamento
                                 progressBar.setVisibility(View.GONE);
-                                Toast.makeText(getBaseContext(),String.valueOf(R.string.notificacoes_toasterror3), Toast.LENGTH_LONG).show();
+                                Toast.makeText(getBaseContext(), R.string.notificacoes_toasterror3, Toast.LENGTH_LONG).show();
                             }
 
                             @Override
                             public void onNext(Void response){
                                 //Esconde barra de carregamento
                                 progressBar.setVisibility(View.GONE);
-                                Toast.makeText(getBaseContext(),String.valueOf(R.string.atualizar_toast_attsucesso),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getBaseContext(),R.string.atualizar_toast_attsucesso,Toast.LENGTH_SHORT).show();
                                 //finish();
                             }
                         });
@@ -253,24 +255,20 @@ public class notificacoes extends AppCompatActivity
                             public void onError(Throwable e){
                                 //Esconde barra de carregamento
                                 progressBar.setVisibility(View.GONE);
-                                Toast.makeText(getBaseContext(),String.valueOf(R.string.notificacoes_toasterror3), Toast.LENGTH_LONG).show();
+                                Toast.makeText(getBaseContext(),R.string.notificacoes_toasterror3, Toast.LENGTH_LONG).show();
                             }
 
                             @Override
                             public void onNext(Void response){
                                 //Esconde barra de carregamento
                                 progressBar.setVisibility(View.GONE);
-                                Toast.makeText(getBaseContext(),String.valueOf(R.string.atualizar_toast_attsucesso),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getBaseContext(),R.string.atualizar_toast_attsucesso,Toast.LENGTH_SHORT).show();
                             }
                         });
             }
         });
 
-        if(!Locale.getDefault().getLanguage().equals("pt")) {
-            categorias = (List<Categoria>) SaveState.loadData(this,SaveState.SAVESTATE_CATEGORIAS_PATH);
-        } else {
-            categorias = new ArrayList<>();
-        }
+        categorias = EventosSingleton.getInstance().getCategorias();
         myRecyclerView = (RecyclerView) findViewById(R.id.lista_categorias);
         myRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerViewCategoriasAdapter(getBaseContext(),categorias, categorias_preferencias);
@@ -289,6 +287,9 @@ public class notificacoes extends AppCompatActivity
         RetrofitAPI retrofit = new RetrofitAPI();
         final Api api = retrofit.retrofit().create(Api.class);
 
+        final SharedPreferences sharedPref = getBaseContext().
+                getSharedPreferences(sharedPrefUtil.getKey(), Context.MODE_PRIVATE);
+
         Observable<List<Categoria>> observable = api.getCategorias();
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -301,17 +302,13 @@ public class notificacoes extends AppCompatActivity
                     public void onError(Throwable e) {
                         //Encerra barra de carregamento
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getBaseContext(), String.valueOf(R.string.categorias_toast_loaderror), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(), R.string.categorias_toast_loaderror, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onNext(List<Categoria> response) {
                         //Copia resultados para a lista de categorias
-                        if(SharedPref.deveTraduzir()) {
-                            if(!attListaCategorias(response)) {
-                                categorias = traduzirCategorias(response);
-                            }
-                        }
+                        categorias = EventosSingleton.getInstance().getCategorias();
                         Observable<List<Categoria>> observable = api.getPreferenciasDeNotificacoes(usuario.getId());
                         observable.subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -324,7 +321,7 @@ public class notificacoes extends AppCompatActivity
                                     public void onError(Throwable e) {
                                         //Encerra barra de carregamento
                                         progressBar.setVisibility(View.GONE);
-                                        Toast.makeText(getBaseContext(), String.valueOf(R.string.notificacoes_toasterror2), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getBaseContext(), R.string.notificacoes_toasterror2, Toast.LENGTH_SHORT).show();
                                     }
 
                                     @Override
@@ -333,6 +330,7 @@ public class notificacoes extends AppCompatActivity
                                         for (int j = 0; j < response.size(); j++)
                                             categorias_preferencias.add(""+response.get(j).getId());
                                         //Atualiza RecyclerView
+                                        Log.i("CATEGORIA",categorias.size()+"");
                                         adapter.notifyDataSetChanged();
                                         //Encerra barra de carregamento
                                         progressBar.setVisibility(View.GONE);
@@ -340,6 +338,34 @@ public class notificacoes extends AppCompatActivity
                                 });
                     }
                 });
+
+        if(Locale.getDefault().getLanguage().equals("pt")) {
+            ((Switch) findViewById(R.id.habilitarTranslate)).setVisibility(View.GONE);
+            ((TextView) findViewById(R.id.textViewTranslate)).setVisibility(View.GONE);
+        }
+
+        //Adiciona listener ao switcher de adicionar eventos à agenda
+        Switch switchTranslate = (Switch) findViewById(R.id.habilitarTranslate);
+        if(SharedPref.deveTraduzir(sharedPref)) switchTranslate.setChecked(true);
+        else switchTranslate.setChecked(false);
+        switchTranslate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences sharedPref = getBaseContext().
+                        getSharedPreferences(sharedPrefUtil.getKey(), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+//                Log.i("TRANSLATE", "CHECKED: " + isChecked);
+                if(isChecked) {
+                    editor.putBoolean("traduzir",true);
+                }
+                else {
+                    editor.putBoolean("traduzir",false);
+                }
+                editor.commit();
+//                Log.i("TRANSLATE", "CHECKED: " + sharedPref.getBoolean("traduzir",true));
+                Toast.makeText(getBaseContext(), R.string.notificacoes_toast_translate, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void salvar_configuracoes(View view){
@@ -367,12 +393,12 @@ public class notificacoes extends AppCompatActivity
                     public void onError(Throwable e) {
                         //Encerra barra de carregamento
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getBaseContext(), String.valueOf(R.string.notificacoes_toasterror1), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(), R.string.notificacoes_toasterror1, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onNext(Void response) {
-                        Toast.makeText(getBaseContext(), String.valueOf(R.string.atualizar_toast_attsucesso), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(), R.string.atualizar_toast_attsucesso, Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 });
@@ -403,6 +429,7 @@ public class notificacoes extends AppCompatActivity
 
         if (id == R.id.nav_inicio) {
             Intent it = new Intent(getBaseContext(),inicial.class);
+            it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(it);
         }
         else if(id == R.id.nav_sobre){
@@ -417,7 +444,7 @@ public class notificacoes extends AppCompatActivity
                 startActivity(it);
             }
             else{
-                Toast.makeText(getBaseContext(),String.valueOf(R.string.atualizar_toast_cadastrarerror2),Toast.LENGTH_LONG)
+                Toast.makeText(getBaseContext(),R.string.atualizar_toast_cadastrarerror2,Toast.LENGTH_LONG)
                         .show();
             }
         } else if (id == R.id.nav_notificacoes) {
@@ -436,7 +463,8 @@ public class notificacoes extends AppCompatActivity
             mAuth.signOut();
 
             // Deletar Arquivos internos
-            SaveState.clearData(this);
+            SaveState.clearData(this,SaveState.SAVESTATE_CATEGORIAS_PATH);
+            SaveState.clearData(this,SaveState.SAVESTATE_EVENTOS_PATH);
 
             // Google sign out
             mGoogleSignInClient.signOut().addOnCompleteListener(this,

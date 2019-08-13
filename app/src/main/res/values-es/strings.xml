@@ -6,9 +6,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Ajustes</string>
-    <string name="title_activity_notificacoes">Notificaciones</string>
+    <string name="title_activity_notificacoes">Opciones</string>
     <string name="title_activity_inicial">UFV Eventos</string>
     <string name="title_activity_login">UFV Eventos</string>
+    <string name="title_activity_detalhes">Evento</string>
     <string name="title_activity_categorias_pagina_inicial">Categorías</string>
     <string-array name="sexo_array">
         <item>Prefiero no decir</item>
@@ -60,7 +61,7 @@
 
     <string name="menu_option_inicial">Inicio</string>
     <string name="menu_option_editarperfil">Editar Perfil</string>
-    <string name="menu_option_notificacoes">Notificaciones</string>
+    <string name="menu_option_notificacoes">Opciones</string>
     <string name="menu_option_sobre">Sobre la aplicación</string>
     <string name="menu_option_sair">Cerrar sesión</string>
 
@@ -68,7 +69,8 @@
     <string name="inicial_toast_carregarevento">No se pudo cargar los eventos.</string>
     <string name="inicial_toast_naoexistemeventos">No hay eventos en este momento.</string>
     <string name="inicial_toast_funcindisponivel">Funcionalidad no disponible para los usuarios de Google</string>
-
+    <string name="inicial_dialog_text">Esta aplicación utiliza la API Google Translate para hacer la traducción de su contenido. Si los datos tardan mucho tiempo para cargarlos, puede deshabilitar esta función en el Menú Principal > Opciones > Habilitar la traducción de contenido. </string>
+    <string name="inicial_dialog_ok">OK entendí</string>
     <string name="evento_row_lb_horario">Hora: </string>
 
     <string name="categorias_text">Seleccione las categorías de eventos que desea ver en la pantalla de inicio de la aplicación.</string>
@@ -95,12 +97,19 @@
     <string name="detalhes_add_agenda">Evento agregado a la agenda.</string>
     <string name="detalhes_destino">Destino</string>
 
+    <string name="programacao_data">Fecha:</string>
+    <string name="programacao_horario">Tiempo:</string>
+    <string name="programacao_descricao">Descripción:</string>
+    <string name="detalhes_descricao_programacao">Descripción de las Actividades:</string>
+
 
     <string name="notificacoes_habilitar">Habilitar notificaciones</string>
     <string name="notificacoes_addeventos">Agregar eventos a la agenda</string>
+    <string name="notificacoes_translate">Habilitar la traducción de contenido (Necesario reiniciar la aplicación)</string>
     <string name="notificacoes_salvar">Guardar configuración</string>
     <string name="notificacoes_toasterror1">No se pudo actualizar las preferencias.</string>
     <string name="notificacoes_toasterror2">Por favor, compruebe su conexión a Internet.</string>
     <string name="notificacoes_toasterror3">No se pudo actualizar la configuración, vuelva a intentarlo en un momento.</string>
+    <string name="notificacoes_toast_translate">Configuração salva! Será efetuada en la próxima ejecución de la aplicación</string>
 
 </resources>

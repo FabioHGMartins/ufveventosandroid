@@ -1,5 +1,8 @@
 package com.labd2m.vma.ufveventos.util;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.util.Locale;
 
 public class SharedPref {
@@ -15,7 +18,9 @@ public class SharedPref {
         return "UFVEVENTOS"+id;
     }
 
-    public static boolean deveTraduzir() {
-        return !Locale.getDefault().getLanguage().equals("pt");
+    public static boolean deveTraduzir(SharedPreferences sharedPref) {
+        boolean spTraduzir = sharedPref.getBoolean("traduzir",true);
+        boolean isPt = Locale.getDefault().getLanguage().equals("pt");
+        return !isPt && spTraduzir;
     }
 }
