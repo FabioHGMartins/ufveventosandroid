@@ -34,6 +34,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.labd2m.vma.ufveventos.R;
 import com.labd2m.vma.ufveventos.model.Categoria;
 import com.labd2m.vma.ufveventos.model.Evento;
@@ -61,15 +63,12 @@ import com.google.gson.Gson;
 import com.labd2m.vma.ufveventos.util.SharedPref;
 
 import org.json.JSONObject;
-import java.text.DateFormat;
+
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 public class detalhes_evento_com_descricao extends AppCompatActivity implements OnMapReadyCallback, LocationListener,
@@ -85,6 +84,11 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
     public Evento evento;
     public float yAnterior;
     public float y;
+
+    public String localEventoMarcador = "";
+    public Marker myMarker = null;
+    public Location locationStart = null;
+    public int contLocationUpdates = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,8 +173,13 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
         if (evento.getLocais().size() > 0) {
             List<Local> locais = evento.getLocais();
             String local = "";
+
             for (int i = 0; i < locais.size(); i++) {
                 local = local + locais.get(i).getDescricao();
+
+                if(i == 0)
+                    localEventoMarcador = local;
+
                 if (i != locais.size() - 1)
                     local = local + ", ";
             }
@@ -313,8 +322,8 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
                 getPackageName());
 
         if (status == PackageManager.PERMISSION_GRANTED) {
-            Location location = mLocationManager.getLastKnownLocation(provider);
-            updateWithNewLocation(location);
+            locationStart = mLocationManager.getLastKnownLocation(provider);
+            updateWithNewLocation(locationStart);
             long minTime = 5000;// ms
             float minDist = 5.0f;// meter
             mLocationManager.requestLocationUpdates(provider, minTime, minDist, this);
@@ -356,16 +365,35 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
 
             mSourceLatLng = new LatLng(lat, lng);
 
+            //Atualiza marcador do usuário
+            if(myMarker != null)
+                myMarker.remove();
+
+            myMarker = addMarker(lat,
+                    lng,
+                    getResources().getString(R.string.detalhes_minha_localizacao),
+                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+
+            //TODO: teste para corrigir rota quando obtem atualização da posição
+            //traceMe(mSourceLatLng,mDestinationLatLng);
+
             CameraPosition camPosition = new CameraPosition.Builder()
                     .target(new LatLng(lat, lng)).zoom(14f).build();
 
             if (mGoogleMap != null) {
-                mGoogleMap.animateCamera(CameraUpdateFactory
-                        .newCameraPosition(camPosition));
+                //só atualiza a câmera na primeira vez que pega a posição do usuário
+                if(contLocationUpdates == 0)
+                    mGoogleMap.animateCamera(CameraUpdateFactory
+                            .newCameraPosition(camPosition));
+                else
+                    Log.d("Marcador", "Contador de atualizações: " + contLocationUpdates);
+
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED)
                     mGoogleMap.setMyLocationEnabled(true);
             }
+
+            contLocationUpdates += 1;
         } else {
             Log.d("Location error", "Something went wrong");
         }
@@ -374,13 +402,29 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
         MarkerOptions mMarkerOptions = new MarkerOptions();
         mMarkerOptions.position(new LatLng(lat, lang));
         mMarkerOptions.anchor(0.5f, 0.5f);
+
+        if(mCurrentPosition != null) {
+            mCurrentPosition.remove();
+            Log.d("Marcador", "Removi posição evento");
+        }
+
+        //TODO: posição temporária do evento. Eliminar futuramente
         mCurrentPosition = mGoogleMap.addMarker(mMarkerOptions);
+
     }
-    private void addMarker(double lat, double lng, String text) {
-        mGoogleMap.addMarker(new MarkerOptions()
+    private Marker addMarker(double lat, double lng, String text) {
+        return mGoogleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(lat,lng))
                 .title(text)
-                .flat(true));
+                .flat(false));
+    }
+
+    private Marker addMarker(double lat, double lng, String text, BitmapDescriptor cor ) {
+        return mGoogleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(lat,lng))
+                .title(text)
+                .icon(cor)
+                .flat(false));
     }
 
     @Override
@@ -414,48 +458,77 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
     private void traceMe(LatLng srcLatLng, LatLng destLatLng) {
         String srcParam = srcLatLng.latitude + "," + srcLatLng.longitude;
         String destParam = destLatLng.latitude + "," + destLatLng.longitude;
+        /*String url = "https://maps.googleapis.com/maps/api/directions/json?origin="+srcParam+"&destination="
+                + destParam + "&sensor=false&units=metric&mode=driving&key=AIzaSyCYMR04JVUMSJMs0BtLxl6rsAVY-xwTLqk";*/
+
+        //Mesmo padrão de requisição do iOS
         String url = "https://maps.googleapis.com/maps/api/directions/json?origin="+srcParam+"&destination="
-                + destParam + "&sensor=false&units=metric&mode=driving&key=AIzaSyCYMR04JVUMSJMs0BtLxl6rsAVY-xwTLqk";
+                + destParam + "&sensor=false&mode=driving&key=AIzaSyC2vzuwOgPqc-bKKZZ_OykqsTYx6qRTTe8";
+
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.d("Rota", "Obtive rota");
                         MapDirectionsParser parser = new MapDirectionsParser();
                         List<List<HashMap<String, String>>> routes = parser.parse(response);
                         ArrayList<LatLng> points = null;
 
-                        for (int i = 0; i < routes.size(); i++) {
-                            points = new ArrayList<LatLng>();
+                        Log.d("Rota", "Tamanho rota: " + routes.size());
 
-                            // Fetching i-th route
-                            List<HashMap<String, String>> path = routes.get(i);
+                        if(routes.size() > 0) {
+                            for (int i = 0; i < routes.size(); i++) {
+                                points = new ArrayList<LatLng>();
 
-                            //Limpa mapa
-                            mGoogleMap.clear();
+                                // Fetching i-th route
+                                List<HashMap<String, String>> path = routes.get(i);
 
-                            //Adiciona marcador à posição final
-                            HashMap<String, String> pointAux = path.get(path.size()-1);
-                            Double latAux = Double.parseDouble(pointAux.get("lat"));
-                            Double lngAux = Double.parseDouble(pointAux.get("lng"));
-                            addMarker(latAux,lngAux,String.valueOf(R.string.detalhes_destino));
+                                //Limpa mapa
+                                mGoogleMap.clear();
 
-                            // Fetching all the points in i-th route
-                            for (int j = 0; j < path.size(); j++) {
-                                HashMap<String, String> point = path.get(j);
+                                //Adiciona marcador à posição final
+                                HashMap<String, String> pointAux = path.get(path.size() - 1);
+                                Double latAux = Double.parseDouble(pointAux.get("lat"));
+                                Double lngAux = Double.parseDouble(pointAux.get("lng"));
 
-                                double lat = Double.parseDouble(point.get("lat"));
-                                double lng = Double.parseDouble(point.get("lng"));
-                                LatLng position = new LatLng(lat, lng);
+                                //Marcador do local do evento
+                                addMarker(latAux, lngAux, getResources().getString(R.string.detalhes_destino));
 
-                                points.add(position);
+                                //Local do evento não traduzido no marcador
+                                //addMarker(latAux,lngAux,localEventoMarcador);
+
+                                //TODO: posição inicial da pessoa. Eliminar futuramente
+                                if (myMarker != null)
+                                    myMarker.remove();
+
+                                myMarker = addMarker(locationStart.getLatitude(),
+                                        locationStart.getLongitude(),
+                                        getResources().getString(R.string.detalhes_minha_localizacao),
+                                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+
+                                Log.d("Rota", "Pontos na rota: " + path.size());
+
+                                // Fetching all the points in i-th route
+                                for (int j = 0; j < path.size(); j++) {
+                                    HashMap<String, String> point = path.get(j);
+
+                                    double lat = Double.parseDouble(point.get("lat"));
+                                    double lng = Double.parseDouble(point.get("lng"));
+                                    LatLng position = new LatLng(lat, lng);
+
+                                    points.add(position);
+                                }
                             }
-                        }
-                        drawPoints(points, mGoogleMap);
+                            drawPoints(points, mGoogleMap);
+                        }else
+                            Log.d("Rota", "Não foi possível obter rota");
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        Log.d("Rota", "Erro na rota");
                     }
                 });
 

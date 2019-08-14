@@ -97,6 +97,7 @@
     <string name="detalhes_toast_error">Não foi possível conectar.</string>
     <string name="detalhes_add_agenda">Evento adicionado à agenda.</string>
     <string name="detalhes_destino">Destino</string>
+    <string name="detalhes_minha_localizacao">Minha localização</string>
 
     <string name="programacao_data">Data:</string>
     <string name="programacao_horario">Horário:</string>

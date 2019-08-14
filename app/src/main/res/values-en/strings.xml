@@ -99,6 +99,7 @@
     <string name="detalhes_toast_error">Could not connect.</string>
     <string name="detalhes_add_agenda">Event added to calendar.</string>
     <string name="detalhes_destino">Destination</string>
+    <string name="detalhes_minha_localizacao">My location</string>
 
     <string name="programacao_data">Date:</string>
     <string name="programacao_horario">Time:</string>
