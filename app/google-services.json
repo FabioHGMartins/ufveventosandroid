@@ -41,10 +41,6 @@
         {
           "client_id": "224128381554-g15qnhlokg544p5746fv9q5tg1b0c1aa.apps.googleusercontent.com",
           "client_type": 3
-        },
-        {
-          "client_id": "224128381554-g15qnhlokg544p5746fv9q5tg1b0c1aa.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
@@ -53,20 +49,20 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "224128381554-g15qnhlokg544p5746fv9q5tg1b0c1aa.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "224128381554-8910vv3le0r8q26thf7rqprggg6tt81k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "ufv.labd2m.ufveventos"
+              }
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     },
@@ -78,6 +74,22 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "224128381554-27l5iacltr2uo5gjsnerk3a6eqfkhvo0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.labd2m.vma.ufveventos",
+            "certificate_hash": "8fa5fe17a45ae880adcaf0e18097f08b4c083656"
+          }
+        },
+        {
+          "client_id": "224128381554-s47gkkac4c78c6vhl8pgdaqbtlokcc6r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.labd2m.vma.ufveventos",
+            "certificate_hash": "b460cd89e764c74e685848986c4797b6adf21930"
+          }
+        },
         {
           "client_id": "224128381554-bufsf77ed7ch0aq1n0v1fe5fqjd35tfl.apps.googleusercontent.com",
           "client_type": 1,
@@ -121,10 +133,6 @@
         {
           "client_id": "224128381554-g15qnhlokg544p5746fv9q5tg1b0c1aa.apps.googleusercontent.com",
           "client_type": 3
-        },
-        {
-          "client_id": "224128381554-g15qnhlokg544p5746fv9q5tg1b0c1aa.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
@@ -133,20 +141,20 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "224128381554-g15qnhlokg544p5746fv9q5tg1b0c1aa.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "224128381554-8910vv3le0r8q26thf7rqprggg6tt81k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "ufv.labd2m.ufveventos"
+              }
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }

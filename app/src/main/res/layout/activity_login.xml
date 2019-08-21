@@ -122,13 +122,24 @@
                 android:textColor="#FFFFFF"
                 android:text="@string/login_bt_signin"
                 android:onClick="entrar" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/login_bt_sem_usuario"
+                android:textAllCaps="false"
+                android:textColor="#BC2B3B"
+                style="?android:attr/borderlessButtonStyle"
+                android:textSize="14dp"
+                android:onClick="entrarSemLogin"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
-                android:elevation="1dp"
                 android:orientation="horizontal"
                 android:weightSum="1"
                 tools:ignore="UselessLeaf">
@@ -138,28 +149,27 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="5dp"
                     android:text="@string/login_lb_signup"
                     android:layout_weight="0.11" />
 
                 <Button
                     android:id="@+id/button2"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5.5dp"
+                    android:layout_height="40dp"
                     android:text="@string/login_bt_signup"
                     android:textAllCaps="false"
                     android:textColor="#BC2B3B"
                     style="?android:attr/borderlessButtonStyle"
                     android:textSize="14dp"
                     android:onClick="cadastrar"/>
+
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="420dp"
+            android:layout_marginTop="440dp"
             android:elevation="1dp"
             android:orientation="horizontal"
             android:weightSum="1"
@@ -173,6 +183,7 @@
                 android:id="@+id/esqueciaasenha"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
                 android:textAllCaps="false"
                 android:textColor="#BC2B3B"
                 style="?android:attr/borderlessButtonStyle"

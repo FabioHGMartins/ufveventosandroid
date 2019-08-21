@@ -25,6 +25,7 @@
     <string name="login_lb_email">Your e-mail</string>
     <string name="login_lb_senha">Password</string>
     <string name="login_bt_signin">Sign in</string>
+    <string name="login_bt_sem_usuario">Access without login</string>
     <string name="login_lb_signup">No account yet?</string>
     <string name="login_bt_signup">Sign up</string>
     <string name="login_bt_esquecisenha">I forgot my password</string>
@@ -70,6 +71,7 @@
     <string name="inicial_toast_carregarevento">The events could not be loaded.</string>
     <string name="inicial_toast_naoexistemeventos">No events at the moment.</string>
     <string name="inicial_toast_funcindisponivel">Functionality unavailable for Google users</string>
+    <string name="inicial_toast_anonimo">Functionality unavailable for users without login</string>
     <string name="inicial_dialog_text">This application uses the Google Translate API to translate your content. If the data is too slow to load, you can disable this feature in Main Menu > Options > Enable content translation. </string>
     <string name="inicial_dialog_ok">OK, I got it</string>
 

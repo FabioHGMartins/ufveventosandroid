@@ -25,6 +25,7 @@
     <string name="login_lb_email">Su Correo electrónico</string>
     <string name="login_lb_senha">Contraseña</string>
     <string name="login_bt_signin">Iniciar sesión</string>
+    <string name="login_bt_sem_usuario">Iniciar sesión sin cuenta</string>
     <string name="login_lb_signup">¿No tiene cuenta?</string>
     <string name="login_bt_signup">Registro</string>
     <string name="login_bt_esquecisenha">Olvidé la contraseña</string>
@@ -69,6 +70,7 @@
     <string name="inicial_toast_carregarevento">No se pudo cargar los eventos.</string>
     <string name="inicial_toast_naoexistemeventos">No hay eventos en este momento.</string>
     <string name="inicial_toast_funcindisponivel">Funcionalidad no disponible para los usuarios de Google</string>
+    <string name="inicial_toast_anonimo">Funcionalidad no disponible para los usuarios sin cuenta</string>
     <string name="inicial_dialog_text">Esta aplicación utiliza la API Google Translate para hacer la traducción de su contenido. Si los datos tardan mucho tiempo para cargarlos, puede deshabilitar esta función en el Menú Principal > Opciones > Habilitar la traducción de contenido. </string>
     <string name="inicial_dialog_ok">OK entendí</string>
     <string name="evento_row_lb_horario">Hora: </string>

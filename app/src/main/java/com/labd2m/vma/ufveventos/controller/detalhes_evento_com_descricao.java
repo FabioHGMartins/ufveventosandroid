@@ -374,8 +374,6 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
                     getResources().getString(R.string.detalhes_minha_localizacao),
                     BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
-            //TODO: teste para corrigir rota quando obtem atualização da posição
-            //traceMe(mSourceLatLng,mDestinationLatLng);
 
             CameraPosition camPosition = new CameraPosition.Builder()
                     .target(new LatLng(lat, lng)).zoom(14f).build();

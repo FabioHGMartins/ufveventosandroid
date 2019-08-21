@@ -526,6 +526,312 @@ public class login extends AppCompatActivity implements View.OnClickListener {
         startActivity(it);
     }
 
+    public void entrarSemLogin(View view){
+        Log.e("LOGIN", "Entrou como anônimo!");
+
+        sharedPref = this.getSharedPreferences(sharedPrefUtil.getKey(), Context.MODE_PRIVATE);
+
+        //Valida dados de login
+        boolean valido = true;
+
+        if (valido) {
+            //Cria objeto para acessar a API de dados Siseventos
+            RetrofitAPI retrofit = new RetrofitAPI();
+            final Api api = retrofit.retrofit().create(Api.class);
+
+            //Inicia barra de carregamento
+            final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBarLogin);
+            progressBar.setVisibility(View.VISIBLE);
+
+            JSONObject json = new JSONObject();
+            String usuario = "login_anonimo@anonimo.com";
+            String senha = "9anONimo123";
+
+            Seguranca s = new Seguranca();
+            senha = s.duploMd5(senha);
+            try {
+                json.put("usuario", usuario);
+                json.put("senha", senha);
+            } catch (Exception e) {
+                Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            Log.i("Login","Iniciando autenticação de "+usuario+" - "+senha);
+            Observable<Usuario> observable = api.authUsuario(json);
+            observable.subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<Usuario>() {
+                        @Override
+                        public void onCompleted() {
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            if (e instanceof HttpException) {
+                                ResponseBody aux = ((HttpException) e).response().errorBody();
+                                try {
+                                    JSONObject json = new JSONObject(aux.string());
+                                    if (json.has("usuario")) {
+                                        ((EditText) findViewById(R.id.emailmatriculaLogin))
+                                                .getBackground().mutate().setColorFilter(getResources().
+                                                getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                                        ((TextView) findViewById(R.id.emailmatriculaErroLogin)).setText(json.getString("usuario"));
+                                    }
+                                    else{
+                                        ((EditText) findViewById(R.id.emailmatriculaLogin))
+                                                .getBackground().mutate().setColorFilter(getResources().
+                                                getColor(R.color.EditText), PorterDuff.Mode.SRC_ATOP);
+                                        ((TextView) findViewById(R.id.emailmatriculaErroLogin)).setText("");
+                                    }
+
+                                    if (json.has("senha")) {
+                                        ((EditText) findViewById(R.id.senhaLogin))
+                                                .getBackground().mutate().setColorFilter(getResources().
+                                                getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                                        ((TextView) findViewById(R.id.senhaErroLogin)).setText(json.getString("senha"));
+                                    }
+                                    else{
+                                        ((EditText) findViewById(R.id.senhaLogin))
+                                                .getBackground().mutate().setColorFilter(getResources().
+                                                getColor(R.color.EditText), PorterDuff.Mode.SRC_ATOP);
+                                        ((TextView) findViewById(R.id.senhaErroLogin)).setText("");
+                                    }
+                                }catch(Exception t){}
+                            }
+                            progressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onNext(Usuario response) {
+                            //Registra login do usuário
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putBoolean("logado", true);
+                            editor.putString("id", response.getId());
+                            editor.putString("email", response.getEmail());
+                            editor.putString("matricula", response.getMatricula());
+                            editor.putString("nascimento", response.getNascimento());
+                            editor.putString("nome", response.getNome());
+                            editor.putString("senha", response.getSenha());
+                            editor.putString("sexo", response.getSexo());
+                            editor.putString("foto", response.getFoto());
+                            editor.commit();
+
+                            //Popula o singleton do usuário logado com os dados
+                            final UsuarioSingleton usuario = UsuarioSingleton.getInstance();
+                            usuario.setId(response.getId());
+                            usuario.setEmail(response.getEmail());
+                            usuario.setMatricula(response.getMatricula());
+                            usuario.setNascimento(response.getNascimento());
+                            usuario.setNome(response.getNome());
+                            usuario.setSenha(response.getSenha());
+                            usuario.setSexo(response.getSexo());
+                            usuario.setFoto(response.getFoto());
+
+
+                            Observable<List<Categoria>> observableCategorias = api.getPreferenciasDeCategorias(usuario.getId());
+                            observableCategorias.subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Observer<List<Categoria>>() {
+                                        @Override
+                                        public void onCompleted() {
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            //Encerra barra de carregamento
+                                            progressBar.setVisibility(View.GONE);
+                                        }
+
+                                        @Override
+                                        public void onNext(final List<Categoria> catResponse) {
+                                            usuario.setNumCategorias(catResponse.size());
+                                        }
+                                    });
+
+                            //Cadastra token do dispositivo (se necessário) para receber notificações
+                            //Verifica se o usuário possui um token para este dispositivo
+
+                            sharedPref = getBaseContext().
+                                    getSharedPreferences(sharedPrefUtil.getUserKey(response.getId()), Context.MODE_PRIVATE);
+                            String token = sharedPref.getString("firebasetoken", "falso");
+                            if (token.equals("falso")){
+                                //Requisita token FCM
+                                String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                                usuario.setToken(refreshedToken);
+                                editor = sharedPref.edit();
+                                editor.putString("firebasetoken",refreshedToken);
+                                editor.commit();
+
+                                //Cadastra novo dispositivo do usuário
+                                JSONObject json = new JSONObject();
+                                try {
+                                    json.put("usuario", response.getId());
+                                    json.put("token", usuario.getToken());
+                                }catch(Exception e){Log.e("Erro json:",e.getMessage());}
+
+                                RetrofitAPI retrofit = new RetrofitAPI();
+                                final Api api = retrofit.retrofit().create(Api.class);
+                                Observable<Void> observable = api.setDispositivo(json);
+                                observable.subscribeOn(Schedulers.newThread())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(new Observer<Void>() {
+                                            @Override
+                                            public void onCompleted() {
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable e) {
+                                                Log.e("Erro cadastro:",e.getMessage());
+                                                //Encerra barra de carregamento
+                                                progressBar.setVisibility(View.GONE);
+
+                                                //Dispara intent para a tela inicial
+                                                Intent it = new Intent(getBaseContext(),inicial.class);
+                                                startActivity(it);
+                                                finish();
+                                            }
+
+                                            public void onNext(Void response) {
+                                                //Recupera informações da agenda e notificações
+                                                final UsuarioSingleton usuario = UsuarioSingleton.getInstance();
+                                                sharedPref = getSharedPreferences(sharedPrefUtil.getKey(),
+                                                        Context.MODE_PRIVATE);
+                                                String agenda = sharedPref.getString("agenda", "default");
+                                                String notificacoes = sharedPref.getString("notificacoes", "default");
+                                                if (agenda.equals("default")){
+                                                    //Requisita informações de agenda e notificações
+                                                    JSONObject json = new JSONObject();
+                                                    try {
+                                                        json.put("usuario", usuario.getId());
+                                                        json.put("token", usuario.getToken());
+                                                    }catch(Exception e){Log.e("Erro json:",e.getMessage());}
+
+                                                    RetrofitAPI retrofit = new RetrofitAPI();
+                                                    final Api api = retrofit.retrofit().create(Api.class);
+                                                    Observable<Dispositivo> observable = api.getAgendaNotificacoes(json);
+                                                    observable.subscribeOn(Schedulers.newThread())
+                                                            .observeOn(AndroidSchedulers.mainThread())
+                                                            .subscribe(new Observer<Dispositivo>() {
+                                                                @Override
+                                                                public void onCompleted() {}
+
+                                                                @Override
+                                                                public void onError(Throwable e) {
+                                                                    Log.e("Erro cadastro:",e.getMessage());
+                                                                    //Encerra barra de carregamento
+                                                                    progressBar.setVisibility(View.GONE);
+
+                                                                    //Dispara intent para a tela inicial
+                                                                    Intent it = new Intent(getBaseContext(),inicial.class);
+                                                                    startActivity(it);
+                                                                    finish();
+                                                                }
+
+                                                                @Override
+                                                                public void onNext(Dispositivo response) {
+                                                                    try {
+                                                                        usuario.setAgenda(response.getAgenda());
+                                                                        usuario.setNotificacoes(response.getNotificacoes());
+                                                                        sharedPref = getBaseContext().
+                                                                                getSharedPreferences(sharedPrefUtil.getKey(), Context.MODE_PRIVATE);
+                                                                        SharedPreferences.Editor editor = sharedPref.edit();
+                                                                        editor.putString("agenda",usuario.getAgenda());
+                                                                        editor.putString("notificacoes",usuario.getNotificacoes());
+                                                                        editor.commit();
+                                                                    }catch (Exception e){Log.e("ERRO JSON",e.getMessage());}
+
+                                                                    //Encerra barra de carregamento
+
+                                                                    //Dispara intent para a tela inicial
+                                                                    Intent it = new Intent(getBaseContext(),inicial.class);
+                                                                    startActivity(it);
+                                                                    finish();
+                                                                }
+                                                            });
+                                                }else{
+                                                    usuario.setAgenda(agenda);
+                                                    usuario.setNotificacoes(notificacoes);
+                                                    //Encerra barra de carregamento
+
+                                                    //Dispara intent para a tela inicial
+                                                    Intent it = new Intent(getBaseContext(),inicial.class);
+                                                    startActivity(it);
+                                                    finish();
+                                                }
+                                            }
+                                        });
+                            }else{
+                                usuario.setToken(token);
+
+                                //Recupera informações da agenda e notificações
+                                sharedPref = getSharedPreferences(sharedPrefUtil.getKey(),
+                                        Context.MODE_PRIVATE);
+                                String agenda = sharedPref.getString("agenda", "default");
+                                String notificacoes = sharedPref.getString("notificacoes", "default");
+                                if (agenda.equals("default")){
+                                    //Requisita informações de agenda e notificações
+                                    JSONObject json = new JSONObject();
+                                    try {
+                                        json.put("usuario", usuario.getId());
+                                        json.put("token", usuario.getToken());
+                                    }catch(Exception e){Log.e("Erro json:",e.getMessage());}
+
+                                    RetrofitAPI retrofit = new RetrofitAPI();
+                                    final Api api = retrofit.retrofit().create(Api.class);
+                                    Observable<Dispositivo> observable = api.getAgendaNotificacoes(json);
+                                    observable.subscribeOn(Schedulers.newThread())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribe(new Observer<Dispositivo>() {
+                                                @Override
+                                                public void onCompleted() {}
+
+                                                @Override
+                                                public void onError(Throwable e) {
+                                                    Log.e("Erro cadastro:",e.getMessage());
+                                                    //Encerra barra de carregamento
+                                                    progressBar.setVisibility(View.GONE);
+
+                                                    //Dispara intent para a tela inicial
+                                                    Intent it = new Intent(getBaseContext(),inicial.class);
+                                                    startActivity(it);
+                                                    finish();
+                                                }
+
+                                                @Override
+                                                public void onNext(Dispositivo response) {
+                                                    try {
+                                                        usuario.setAgenda(response.getAgenda());
+                                                        usuario.setNotificacoes(response.getNotificacoes());
+                                                        sharedPref = getBaseContext().
+                                                                getSharedPreferences(sharedPrefUtil.getKey(), Context.MODE_PRIVATE);
+                                                        SharedPreferences.Editor editor = sharedPref.edit();
+                                                        editor.putString("agenda",usuario.getAgenda());
+                                                        editor.putString("notificacoes",usuario.getNotificacoes());
+                                                        editor.commit();
+                                                    }catch (Exception e){Log.e("ERRO JSON",e.getMessage());}
+
+                                                    //Encerra barra de carregamento
+                                                    //Dispara intent para a tela inicial
+                                                    Intent it = new Intent(getBaseContext(),inicial.class);
+                                                    startActivity(it);
+                                                    finish();
+                                                }
+                                            });
+                                }else{
+                                    usuario.setAgenda(agenda);
+                                    usuario.setNotificacoes(notificacoes);
+                                    //Encerra barra de carregamento
+                                    //Dispara intent para a tela inicial
+                                    Intent it = new Intent(getBaseContext(),inicial.class);
+                                    startActivity(it);
+                                    finish();
+                                }
+                            }
+                        }
+                    });
+
+        }
+    }
+
     public void entrar(View view){
         sharedPref = this.getSharedPreferences(sharedPrefUtil.getKey(), Context.MODE_PRIVATE);
         //Valida dados de login
