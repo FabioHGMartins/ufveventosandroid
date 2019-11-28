@@ -97,6 +97,7 @@
     <string name="detalhes_sem_inscricao">No es necesario realizar la inscripción.</string>
     <string name="detalhes_toast_error">No se pudo conectar.</string>
     <string name="detalhes_add_agenda">Evento agregado a la agenda.</string>
+    <string name="detalhes_add_agenda_error">No se puede agregar Evento a la agenda.</string>
     <string name="detalhes_destino">Destino</string>
     <string name="detalhes_minha_localizacao">Mi localización</string>
 
@@ -114,5 +115,9 @@
     <string name="notificacoes_toasterror2">Por favor, compruebe su conexión a Internet.</string>
     <string name="notificacoes_toasterror3">No se pudo actualizar la configuración, vuelva a intentarlo en un momento.</string>
     <string name="notificacoes_toast_translate">Configuração salva! Será efetuada en la próxima ejecución de la aplicación</string>
+
+    <string name="gps_desativado_title">GPS Desactivado</string>
+    <string name="gps_ativar_msg">Habilitar GPS</string>
+    <string name="gps_cancelar_ativacao">Cancelar</string>
 
 </resources>

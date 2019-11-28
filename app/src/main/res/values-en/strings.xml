@@ -100,6 +100,7 @@
     <string name="detalhes_sem_inscricao">Registration is not required.</string>
     <string name="detalhes_toast_error">Could not connect.</string>
     <string name="detalhes_add_agenda">Event added to calendar.</string>
+    <string name="detalhes_add_agenda_error">Unable to add Event to calendar.</string>
     <string name="detalhes_destino">Destination</string>
     <string name="detalhes_minha_localizacao">My location</string>
 
@@ -116,6 +117,10 @@
     <string name="notificacoes_toasterror2">Please check your internet connection.</string>
     <string name="notificacoes_toasterror3">The settings could not be updated, please try again in a moment.</string>
     <string name="notificacoes_toast_translate">Setup saved! Will be done on next app run</string>
+
+    <string name="gps_desativado_title">GPS Off</string>
+    <string name="gps_ativar_msg">Enable GPS</string>
+    <string name="gps_cancelar_ativacao">Cancel</string>
 
 
 </resources>

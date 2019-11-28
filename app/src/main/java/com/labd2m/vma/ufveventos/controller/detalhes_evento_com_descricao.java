@@ -1,8 +1,11 @@
 package com.labd2m.vma.ufveventos.controller;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -12,8 +15,10 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -90,6 +95,11 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
     public Location locationStart = null;
     public int contLocationUpdates = 0;
 
+    public boolean isTraced = false;
+    public boolean isLocalized = false;
+    public long minTime = 5000;// ms
+    public float minDist = 0;// meter
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Captura evento solicitado
@@ -98,6 +108,9 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
         evento = gson.fromJson(eventoJson, Evento.class);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes_evento_com_descricao);
+
+        mLocationManager = (LocationManager) getSystemService(
+                Context.LOCATION_SERVICE);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
@@ -284,6 +297,37 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        try{
+            mLocationManager.removeUpdates(this);
+            Log.d("Location", "Parou serviço de localização");
+        }catch (Exception e){
+            Log.e("Location", "Erro ao parar serviço de localização");
+        }
+
+        super.onDestroy();
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        try{
+            if(!isLocalized){
+                if (isProviderAvailable() && provider != null) {
+                    locateCurrentPosition();                    //inicia localização
+                    Log.d("Location", "Reiniciou localização " + provider);
+                }
+            }
+        }catch (Exception e){
+            Log.d("Location", "Erro ao reiniciar localização");
+        }
+
+
+    }
+
     private void initMap(){
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
@@ -291,32 +335,55 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
 
     @Override
     public void onClick(View view){
-        int i = view.getId();
-        //Clicou no botão de adicionar à agenda
-        if (i == R.id.addAgenda) {
-            //Requisita permissão para escrita
-            Permission permission = new Permission();
-            permission.requestPermissionCalendar(detalhes_evento_com_descricao.this,this);
+        try{
+            int i = view.getId();
+            //Clicou no botão de adicionar à agenda
+            if (i == R.id.addAgenda) {
+                //Requisita permissão para escrita
+                Permission permission = new Permission();
+                permission.requestPermissionCalendar(detalhes_evento_com_descricao.this,this);
 
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Agenda calendar = new Agenda();
-                calendar.addEvent(evento, getBaseContext(), getContentResolver(), getParent());
-                Toast.makeText(getBaseContext(), R.string.detalhes_add_agenda, Toast.LENGTH_LONG).show();
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    Agenda calendar = new Agenda();
+                    calendar.addEvent(evento, getBaseContext(), getContentResolver(), getParent());
+                    Toast.makeText(getBaseContext(), R.string.detalhes_add_agenda, Toast.LENGTH_LONG).show();
+                }
             }
+        }catch (Exception e){
+            Toast.makeText(getBaseContext(), R.string.detalhes_add_agenda_error, Toast.LENGTH_LONG).show();
         }
+
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        if (isProviderAvailable() && (provider != null)) {
-            locateCurrentPosition();
+        if (isProviderAvailable() && provider != null) {
+            locateCurrentPosition();                    //inicia localização
+            traceMe(mSourceLatLng,mDestinationLatLng);  //traça rota
+        }else{
+            //serviço de localização desativado
+            locationServiceEnable();
         }
 
-        traceMe(mSourceLatLng,mDestinationLatLng);
     }
+
+    //ativa serviço de localização
+    private void locationServiceEnable() {
+        AlertDialog.Builder alerta = new AlertDialog.Builder(this);
+
+        alerta.setMessage(R.string.gps_desativado_title);
+        alerta.setPositiveButton(R.string.gps_ativar_msg, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            }
+        });
+        alerta.setNegativeButton(R.string.gps_cancelar_ativacao, null).show();
+    }
+
     private void locateCurrentPosition() {
         int status = getPackageManager().checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION,
                 getPackageName());
@@ -324,14 +391,10 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
         if (status == PackageManager.PERMISSION_GRANTED) {
             locationStart = mLocationManager.getLastKnownLocation(provider);
             updateWithNewLocation(locationStart);
-            long minTime = 5000;// ms
-            float minDist = 5.0f;// meter
             mLocationManager.requestLocationUpdates(provider, minTime, minDist, this);
         }
     }
     private boolean isProviderAvailable() {
-        mLocationManager = (LocationManager) getSystemService(
-                Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_COARSE);
         criteria.setAltitudeRequired(false);
@@ -340,6 +403,7 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
         criteria.setPowerRequirement(Criteria.POWER_LOW);
 
         provider = mLocationManager.getBestProvider(criteria, true);
+
         if (mLocationManager
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             provider = LocationManager.NETWORK_PROVIDER;
@@ -352,9 +416,6 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
             return true;
         }
 
-        if (provider != null) {
-            return true;
-        }
         return false;
     }
 
@@ -427,7 +488,16 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.d("Location", "Localização atualizada");
+
         updateWithNewLocation(location);
+        isLocalized = true;
+
+        if(location != null)
+            locationStart = location;
+
+        if(!isTraced)
+            traceMe(mSourceLatLng,mDestinationLatLng);  //traça rota quando usuário ativa GPS e volta para app
     }
 
     @Override
@@ -500,10 +570,17 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
                                 if (myMarker != null)
                                     myMarker.remove();
 
-                                myMarker = addMarker(locationStart.getLatitude(),
-                                        locationStart.getLongitude(),
-                                        getResources().getString(R.string.detalhes_minha_localizacao),
-                                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                                try{
+                                    myMarker = addMarker(locationStart.getLatitude(),
+                                            locationStart.getLongitude(),
+                                            getResources().getString(R.string.detalhes_minha_localizacao),
+                                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+
+                                            isTraced = true; //traçou rota
+                                }catch (Exception e){
+                                    Log.e("Location", "Localização inicial desconhecida");
+                                }
+
 
                                 Log.d("Rota", "Pontos na rota: " + path.size());
 
@@ -560,11 +637,11 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
     }
 
 
-    public void getDirection(View view) {
+    /*public void getDirection(View view) {
         if (mSourceLatLng != null && mDestinationLatLng != null) {
             traceMe(mSourceLatLng, mDestinationLatLng);
         }
-    }
+    }*/
 
     public boolean googleServicesAvailable(){
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
@@ -579,6 +656,7 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
         }
         return false;
     }
+
     public void showHideFirstPart(View view){
         /*Verifica se a terceira parte está aberta*/
         View v = findViewById(R.id.thirdPartDetalhesEvento);
@@ -713,8 +791,7 @@ public class detalhes_evento_com_descricao extends AppCompatActivity implements 
         switch (requestCode) {
             case 1: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED){
                         if (googleServicesAvailable())
