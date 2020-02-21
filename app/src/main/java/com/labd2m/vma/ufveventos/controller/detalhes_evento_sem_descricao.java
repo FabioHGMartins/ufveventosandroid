@@ -128,11 +128,24 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
         SharedPreferences sharedPref = this.getSharedPreferences("UFVEVENTOS45dfd94be4b30d5844d2bcca2d997db0",
                 Context.MODE_PRIVATE);
 
+
         //Traça rota
-        List<Local> locaisAux = evento.getLocais();
-        double latDest = Double.parseDouble(locaisAux.get(0).getLatitude());
-        double lngDest = Double.parseDouble(locaisAux.get(0).getLongitude());
-        mDestinationLatLng = new LatLng(latDest, lngDest);
+        try{
+            List<Local> locaisAux = evento.getLocais();
+            if(locaisAux.size() > 0) {
+                double latDest = Double.parseDouble(locaisAux.get(0).getLatitude());
+                double lngDest = Double.parseDouble(locaisAux.get(0).getLongitude());
+                mDestinationLatLng = new LatLng(latDest, lngDest);
+                mSourceLatLng = new LatLng(latDest, lngDest);
+            }else{
+                mDestinationLatLng = null;
+                mSourceLatLng = null;
+            }
+
+        }catch (Exception e){
+            Log.e("FaltaLocal", "Evento sem local cadastrado! " + e.getMessage());
+        }
+
 
         //Requisita permissão para mapas
         Permission permission = new Permission();
@@ -315,7 +328,13 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
 
         if (isProviderAvailable() && provider != null) {
             locateCurrentPosition();                    //inicia localização
-            traceMe(mSourceLatLng,mDestinationLatLng);  //traça rota
+
+
+            if(mSourceLatLng != null && mDestinationLatLng != null)
+                traceMe(mSourceLatLng,mDestinationLatLng);  //traça rota
+            else
+                Toast.makeText(getBaseContext(),R.string.evento_sem_local, Toast.LENGTH_LONG).show();
+
         }else{
             //serviço de localização desativado
             locationServiceEnable();
@@ -452,8 +471,13 @@ public class detalhes_evento_sem_descricao extends AppCompatActivity implements 
         if(location != null)
             locationStart = location;
 
-        if(!isTraced)
-            traceMe(mSourceLatLng,mDestinationLatLng);  //traça rota quando usuário ativa GPS e volta para app
+        if(!isTraced) {
+            if (mSourceLatLng != null && mDestinationLatLng != null)
+                traceMe(mSourceLatLng, mDestinationLatLng);  //traça rota quando usuário ativa GPS e volta para app
+            else
+                //Toast.makeText(getBaseContext(),"Evento sem local cadastrado", Toast.LENGTH_LONG).show();
+                Log.i("Local", "Evento sem local cadastrado");
+        }
     }
 
     @Override

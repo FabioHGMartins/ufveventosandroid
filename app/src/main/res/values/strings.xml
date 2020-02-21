@@ -121,5 +121,7 @@
     <string name="gps_ativar_msg">Ativar GPS</string>
     <string name="gps_cancelar_ativacao">Cancelar</string>
 
+    <string name="evento_sem_local">Evento sem local cadastrado</string>
+
 
 </resources>

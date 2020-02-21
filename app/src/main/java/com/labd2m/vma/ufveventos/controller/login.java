@@ -165,12 +165,36 @@ public class login extends AppCompatActivity implements View.OnClickListener {
     @Override
     public void onStart(){
         super.onStart();
+        /*
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         //Atualiza singleton do usuário
         UsuarioSingleton usuario = UsuarioSingleton.getInstance();
+        Log.i("Login", "passei por atualizar " + usuario.getNome());
+
         updateUsuario(currentUser,usuario.getId());
+        */
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        try{
+            // Check if user is signed in (non-null) and update UI accordingly.
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+
+            //Atualiza singleton do usuário
+            UsuarioSingleton usuario = UsuarioSingleton.getInstance();
+
+            Log.i("Login", "passei por atualizar " + usuario.getNome());
+
+            updateUsuario(currentUser,usuario.getId());
+
+        }catch (Exception e){
+            Log.e("Login", "erro ao atualizar " + e.getMessage());
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -458,25 +482,29 @@ public class login extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void updateUsuario(FirebaseUser currentUser, String id){
-        if (currentUser != null) {
-            sharedPref = this.getSharedPreferences(sharedPrefUtil.getKey(), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean("logado", true);
-            editor.putString("id", id);
-            editor.putString("googleId", currentUser.getUid());
-            editor.putString("email", currentUser.getEmail());
-            editor.putString("nome", currentUser.getDisplayName());
-            editor.putString("foto", currentUser.getPhotoUrl().toString());
-            editor.commit();
+        try {
+            if (currentUser != null) {
+                sharedPref = this.getSharedPreferences(sharedPrefUtil.getKey(), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("logado", true);
+                editor.putString("id", id);
+                editor.putString("googleId", currentUser.getUid());
+                editor.putString("email", currentUser.getEmail());
+                editor.putString("nome", currentUser.getDisplayName());
+                editor.putString("foto", currentUser.getPhotoUrl().toString());
+                editor.commit();
 
-            UsuarioSingleton usuario = UsuarioSingleton.getInstance();
-            usuario.setId(sharedPref.getString("id", id));
-            usuario.setGoogleId(sharedPref.getString("googleId", currentUser.getUid()));
-            usuario.setEmail(sharedPref.getString("email", currentUser.getEmail()));
-            usuario.setNome(sharedPref.getString("nome", currentUser.getDisplayName()));
-            usuario.setFoto(sharedPref.getString("foto", currentUser.getPhotoUrl().toString()));
-            usuario.setAgenda(sharedPref.getString("agenda","0"));
-            usuario.setNotificacoes(sharedPref.getString("notificacoes","1"));
+                UsuarioSingleton usuario = UsuarioSingleton.getInstance();
+                usuario.setId(sharedPref.getString("id", id));
+                usuario.setGoogleId(sharedPref.getString("googleId", currentUser.getUid()));
+                usuario.setEmail(sharedPref.getString("email", currentUser.getEmail()));
+                usuario.setNome(sharedPref.getString("nome", currentUser.getDisplayName()));
+                usuario.setFoto(sharedPref.getString("foto", currentUser.getPhotoUrl().toString()));
+                usuario.setAgenda(sharedPref.getString("agenda", "0"));
+                usuario.setNotificacoes(sharedPref.getString("notificacoes", "1"));
+            }
+        }catch (Exception e){
+            Log.e("Login", "Erro ao atualizar usuário " + e.getMessage());
         }
     }
 
