@@ -9,8 +9,8 @@ android {
         applicationId "com.labd2m.vma.ufveventos"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 16
-        versionName '1.5.5b'
+        versionCode 17
+        versionName '1.5.6b'
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 

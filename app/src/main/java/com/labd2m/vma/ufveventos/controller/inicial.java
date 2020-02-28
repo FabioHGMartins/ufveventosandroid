@@ -113,7 +113,7 @@ public class inicial extends AppCompatActivity
         //MODIFICA O TEXTO DA OPÇÃO DE LOGOUT DO NAVIGATION DRAWER QUANDO USUÁRIO FOR ANÔNIMO
         try {
             //Verifica se usuário entrou como anônimo
-            if(UsuarioSingleton.getInstance().getEmail().equals("login_anonimo@anonimo.com")){
+            if(UsuarioSingleton.getInstance().getEmail().contains("@anonimo.com")){
                 navigationView.getMenu().getItem(4).setTitle("Login");
             }
         }catch (Exception e){
@@ -623,7 +623,7 @@ public class inicial extends AppCompatActivity
             if (usuario.getGoogleId().equals("default") || usuario.getGoogleId().equals("") ){
 
                 //Verifica se usuário entrou como anônimo
-                if(UsuarioSingleton.getInstance().getEmail().equals("login_anonimo@anonimo.com")){
+                if(UsuarioSingleton.getInstance().getEmail().contains("@anonimo.com")){
                     Toast.makeText(getBaseContext(),R.string.inicial_toast_anonimo,Toast.LENGTH_LONG)
                             .show();
                 }else{
@@ -639,7 +639,7 @@ public class inicial extends AppCompatActivity
         } else if (id == R.id.nav_notificacoes) {
 
             //Verifica se usuário entrou como anônimo
-            if(UsuarioSingleton.getInstance().getEmail().equals("login_anonimo@anonimo.com")){
+            if(UsuarioSingleton.getInstance().getEmail().contains("@anonimo.com")){
                 Toast.makeText(getBaseContext(),R.string.inicial_toast_anonimo,Toast.LENGTH_LONG)
                         .show();
             }else{
