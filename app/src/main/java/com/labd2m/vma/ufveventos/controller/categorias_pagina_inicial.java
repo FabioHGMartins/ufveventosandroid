@@ -79,6 +79,17 @@ public class categorias_pagina_inicial extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        //MODIFICA O TEXTO DA OPÇÃO DE LOGOUT DO NAVIGATION DRAWER QUANDO USUÁRIO FOR ANÔNIMO
+        try {
+            //Verifica se usuário entrou como anônimo
+            if(UsuarioSingleton.getInstance().getEmail().contains("@anonimo.com")){
+                navigationView.getMenu().getItem(4).setTitle("Login");
+            }
+        }catch (Exception e){
+            Log.e("SairMsg", e.getMessage());
+        }
+
         navigationView.setNavigationItemSelectedListener(this);
 
         categorias_preferencias = new ArrayList();
@@ -224,16 +235,28 @@ public class categorias_pagina_inicial extends AppCompatActivity
             Intent it;
             //Se não é um usuário logado com a conta Google pode editar o perfil
             if (usuario.getGoogleId().equals("default") || usuario.getGoogleId().equals("") ){
-                it = new Intent(getBaseContext(), editar_perfil.class);
-                startActivity(it);
+                //Verifica se usuário entrou como anônimo
+                if(UsuarioSingleton.getInstance().getEmail().contains("@anonimo.com")){
+                    Toast.makeText(getBaseContext(),R.string.inicial_toast_anonimo,Toast.LENGTH_LONG)
+                            .show();
+                }else{
+                    it = new Intent(getBaseContext(), editar_perfil.class);
+                    startActivity(it);
+                }
             }
             else{
                 Toast.makeText(getBaseContext(),R.string.categorias_toast_funcindisponivel,Toast.LENGTH_LONG)
                         .show();
             }
         } else if (id == R.id.nav_notificacoes) {
-            Intent it = new Intent(getBaseContext(),notificacoes.class);
-            startActivity(it);
+            //Verifica se usuário entrou como anônimo
+            if(UsuarioSingleton.getInstance().getEmail().contains("@anonimo.com")){
+                Toast.makeText(getBaseContext(),R.string.inicial_toast_anonimo,Toast.LENGTH_LONG)
+                        .show();
+            }else{
+                Intent it = new Intent(getBaseContext(),notificacoes.class);
+                startActivity(it);
+            }
         } else if (id == R.id.nav_sair) {
             //Registra que o usuário saiu
             SharedPreferences sharedPref = this.getSharedPreferences(sharedPrefUtil.getKey(), Context.MODE_PRIVATE);

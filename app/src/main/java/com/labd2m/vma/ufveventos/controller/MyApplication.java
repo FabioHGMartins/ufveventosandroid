@@ -5,13 +5,16 @@ package com.labd2m.vma.ufveventos.controller;
  */
 
 import android.app.Application;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
-public class MyApplication extends Application {
+public class MyApplication extends MultiDexApplication { //correcao retrofit android 4.4 - ao invés de Application
 
     private RequestQueue mRequestQueue;
     private static MyApplication mInstance;
@@ -33,6 +36,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        MultiDex.install(this); //correcao retrofit android 4.4
         mInstance = this;
     }
 
